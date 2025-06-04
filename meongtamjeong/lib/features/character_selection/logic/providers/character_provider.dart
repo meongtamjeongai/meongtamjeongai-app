@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/character_selection/data/repositories/character_repository.dart';
+import '../../data/repositories/character_repository.dart';
 import '../models/character_model.dart';
 
 class CharacterProvider with ChangeNotifier {
   final CharacterRepository _repository = CharacterRepository();
+
   List<CharacterModel> _characters = [];
   CharacterModel? _selectedCharacter;
   bool _isLoading = false;
@@ -19,7 +20,7 @@ class CharacterProvider with ChangeNotifier {
     try {
       _characters = _repository.getCharacters();
     } catch (e) {
-      // Handle error
+      debugPrint('캐릭터 로딩 오류: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

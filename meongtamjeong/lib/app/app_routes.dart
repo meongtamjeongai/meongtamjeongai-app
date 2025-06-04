@@ -35,7 +35,7 @@ final router = GoRouter(
     GoRoute(
       path: '/character-list',
       name: 'character-list',
-      builder: (context, state) => CharacterListScreen(),
+      builder: (context, state) => const CharacterListScreen(),
     ),
 
     GoRoute(

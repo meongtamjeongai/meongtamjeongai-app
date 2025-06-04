@@ -55,7 +55,6 @@ class NaverLoginButton extends StatelessWidget {
   }
 
   void _handleNaverLogin(BuildContext context) {
-    // TODO: 네이버 로그인 로직 연동
     print('네이버 로그인 버튼 클릭됨');
   }
 }

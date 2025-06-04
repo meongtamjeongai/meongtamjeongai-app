@@ -8,7 +8,7 @@ class GuestBrowseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        // TODO: 비회원 상태로 홈 또는 캐릭터 선택으로 이동
+        print('--------------로그인없이---------');
         context.go('/character-select');
       },
       child: const Text(

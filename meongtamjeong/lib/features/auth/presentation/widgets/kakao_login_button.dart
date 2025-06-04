@@ -49,6 +49,5 @@ class KakaoLoginButton extends StatelessWidget {
 
   void _handleKakaoLogin(BuildContext context) {
     print('카카오 로그인 시작');
-    // TODO: 카카오 SDK 연동
   }
 }

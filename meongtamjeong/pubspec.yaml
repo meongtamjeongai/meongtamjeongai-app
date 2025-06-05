@@ -51,7 +51,7 @@ dependencies:
   cached_network_image: ^3.3.1
 
   # 유틸리티
-  intl: ^0.19.0
+  intl: ^0.18.0
   image_picker: ^1.0.4
   file_selector: ^1.0.0
   # file_picker: ^6.2.1

@@ -13,37 +13,44 @@ class CharacterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // 캐릭터 이미지
-            Image.asset(character.imagePath, width: 64, height: 64),
-            const SizedBox(height: 12),
-            Text(
-              character.name,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${character.personality}, ${character.specialty}',
-              style: const TextStyle(fontSize: 11, color: Colors.black54),
-              textAlign: TextAlign.center,
-            ),
-          ],
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.08),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 캐릭터 이미지
+              Image.asset(character.imagePath, width: 90, height: 90),
+              const SizedBox(height: 12),
+              Text(
+                character.name,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${character.personality}, ${character.specialty}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                  letterSpacing: 1.0,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis, // 레이아웃 깨짐 방지
+                maxLines: 2,
+              ),
+            ],
+          ),
         ),
       ),
     );

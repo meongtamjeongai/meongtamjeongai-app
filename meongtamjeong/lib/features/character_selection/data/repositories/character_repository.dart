@@ -7,7 +7,7 @@ class CharacterRepository {
         id: 'meong_001',
         name: '멍탐정',
         personality: '사랑스러움',
-        specialty: '애교 만땅',
+        specialty: '애교쟁이',
         description: '친근하고 따뜻한 성격의 탐정이에요.',
         imagePath: 'assets/images/characters/example_meong.png',
         greeting: '안녕하세요~ 혜혜!',
@@ -78,7 +78,7 @@ class CharacterRepository {
           '그 정도는 알아야죠.',
         ],
       ),
-      // 👉 추가로 5개 더 예시 붙이면 10개 완성
+
       CharacterModel(
         id: 'meong_006',
         name: '푸들 탐정',
@@ -97,7 +97,7 @@ class CharacterRepository {
       CharacterModel(
         id: 'meong_007',
         name: '치와와 탐정',
-        personality: '예민하지만 민첩함',
+        personality: '민첩함',
         specialty: '빠른 반응',
         description: '귀신같은 감으로 사기 메시지를 감지!',
         imagePath: 'assets/images/characters/example_meong.png',
@@ -113,7 +113,7 @@ class CharacterRepository {
         id: 'meong_008',
         name: '달마시안 탐정',
         personality: '정의로움',
-        specialty: '불의에 민감',
+        specialty: '청렴',
         description: '불의를 보면 못 참는 정의로운 탐정.',
         imagePath: 'assets/images/characters/example_meong.png',
         greeting: '정의를 지켜드립니다!',
@@ -127,7 +127,7 @@ class CharacterRepository {
       CharacterModel(
         id: 'meong_009',
         name: '요크셔 탐정',
-        personality: '차분하고 섬세함',
+        personality: '섬세함',
         specialty: '위로와 공감',
         description: '마음이 따뜻해지는 공감형 탐정.',
         imagePath: 'assets/images/characters/example_meong.png',
@@ -142,7 +142,7 @@ class CharacterRepository {
       CharacterModel(
         id: 'meong_010',
         name: '불독 탐정',
-        personality: '강단 있고 직설적',
+        personality: '직설적',
         specialty: '단호함',
         description: '단호하게 문제를 해결하는 돌직구 탐정.',
         imagePath: 'assets/images/characters/example_meong.png',

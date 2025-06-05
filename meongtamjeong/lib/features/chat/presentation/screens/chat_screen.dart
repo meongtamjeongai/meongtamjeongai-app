@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
+import 'package:meongtamjeong/navigation/widgets/custom_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../character_selection/logic/models/character_model.dart';
@@ -102,6 +104,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
           ],
         ),
       ),
+      // bottomNavigationBar 제거 - MainNavigationScreen에서 관리
     );
   }
 

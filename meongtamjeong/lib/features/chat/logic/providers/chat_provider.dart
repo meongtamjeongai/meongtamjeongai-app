@@ -12,6 +12,8 @@ class ChatProvider with ChangeNotifier {
   final List<File> pendingFiles = [];
   final ScrollController scrollController = ScrollController();
 
+  static final List<Map<String, dynamic>> chatHistories = [];
+
   ChatProvider(this.character);
 
   void sendMessage(String text, DateTime time) {
@@ -42,11 +44,21 @@ class ChatProvider with ChangeNotifier {
 
     // 간단한 봇 응답 추가
     Future.delayed(const Duration(milliseconds: 500), () {
+      final botMsg = '${character.name}의 응답이에요!';
+
       messages.add({
         'from': 'bot',
         'text': '${character.name}의 응답이에요!',
         'time': time.add(const Duration(seconds: 1)),
       });
+
+      chatHistories.removeWhere((e) => e['character'].name == character.name);
+      chatHistories.add({
+        'character': character,
+        'lastMessage': botMsg,
+        'time': DateTime.now(),
+      });
+
       notifyListeners();
       scrollToBottom();
     });

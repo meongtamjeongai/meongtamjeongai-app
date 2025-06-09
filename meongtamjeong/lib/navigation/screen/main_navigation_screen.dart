@@ -34,7 +34,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void didUpdateWidget(covariant MainNavigationScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // index 값이 바뀌었을 때만 상태 갱신
     if (widget.initialIndex != oldWidget.initialIndex) {
       setState(() {
         _currentIndex = widget.initialIndex;

@@ -21,7 +21,8 @@ class MenuListTile extends StatelessWidget {
             // TODO: GoRouter 연결
           },
         ),
-        const Divider(height: 1, color: Colors.grey),
+        SizedBox(height: 10),
+        Divider(height: 1, color: Colors.grey[300]),
       ],
     );
   }

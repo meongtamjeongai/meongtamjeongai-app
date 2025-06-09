@@ -19,7 +19,7 @@ class LoginScreen extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/images/characters/example_meong.png',
-                height: 120,
+                height: 200,
               ),
               const SizedBox(height: 24),
 

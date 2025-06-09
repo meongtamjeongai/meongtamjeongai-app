@@ -9,6 +9,7 @@ class HeartBalanceCard extends StatelessWidget {
     final heartCount = 0;
 
     return Container(
+      height: 80,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.blue,
@@ -24,7 +25,7 @@ class HeartBalanceCard extends StatelessWidget {
               '보유하트 $heartCount개',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -34,7 +35,7 @@ class HeartBalanceCard extends StatelessWidget {
             child: Row(
               children: const [
                 Text('구매하기', style: TextStyle(color: Colors.white)),
-                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),
+                Icon(Icons.arrow_forward_ios, size: 18, color: Colors.white),
               ],
             ),
           ),

@@ -8,13 +8,9 @@ import 'package:meongtamjeong/features/chat/presentation/screens/file_attachment
 import 'package:meongtamjeong/features/chat/presentation/screens/image_attachment_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/heart_recharge_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/profile_edit_screen.dart';
+import 'package:meongtamjeong/features/phishing_detection/presentation/screens/detection_main_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
 import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
-// import 'package:meongtamjeong/features/phishing/presentation/screens/phishing_screen.dart';
-// import 'package:meongtamjeong/features/phishing_simulation/presentation/screens/main_simulation_screen.dart';
-// import 'package:meongtamjeong/features/translation/presentation/main_translation_screen.dart';
-// import 'package:meongtamjeong/history/screen/chat_history_screen.dart';
-// import 'package:meongtamjeong/features/mypage/presentation/screens/mypage_main_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -59,10 +55,16 @@ final router = GoRouter(
         final data = state.extra as Map<String, dynamic>;
         final character = data['character'] as CharacterModel;
         final index = data['index'] as int? ?? 2;
-
         return MainNavigationScreen(character: character, initialIndex: index);
       },
     ),
+
+    GoRoute(
+      path: '/phishing-detection',
+      name: 'phishing-detection',
+      builder: (context, state) => const DetectionMainScreen(),
+    ),
+
     GoRoute(
       path: '/profile-edit',
       name: 'profile-edit',

@@ -1,4 +1,4 @@
-package com.example.meongtamjeong
+package shop.meong.meongtamjeong
 
 import io.flutter.embedding.android.FlutterActivity
 

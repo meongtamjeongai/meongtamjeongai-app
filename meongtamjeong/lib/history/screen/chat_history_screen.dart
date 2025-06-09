@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:meongtamjeong/features/chat/logic/providers/chat_provider.dart';
 import 'package:meongtamjeong/features/chat/presentation/screens/chat_screen.dart';
-import 'package:meongtamjeong/navigation/widgets/custom_bottom_nav_bar.dart';
 
 class ChatHistoryScreen extends StatefulWidget {
   const ChatHistoryScreen({super.key});
@@ -68,6 +67,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                   vertical: 12,
                 ),
                 leading: CircleAvatar(
+                  backgroundColor: Colors.grey[300],
                   backgroundImage: AssetImage(character.imagePath),
                   radius: 28,
                 ),
@@ -95,43 +95,17 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                   style: const TextStyle(fontSize: 13, color: Colors.grey),
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ChatScreen(character: character),
-                    ),
+                  context.goNamed(
+                    'main',
+                    extra: {
+                      'character': character,
+                      'index': 2, // 대화하기 탭
+                    },
                   );
                 },
               ),
             ),
           );
-        },
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: 3,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.goNamed('home');
-              break;
-            case 1:
-              context.goNamed('phishing');
-              break;
-            case 2:
-              final latest =
-                  ChatProvider.chatHistories.isNotEmpty
-                      ? ChatProvider.chatHistories.last['character']
-                      : null;
-              if (latest != null) {
-                context.goNamed('chat', extra: latest);
-              }
-              break;
-            case 3:
-              break;
-            case 4:
-              context.goNamed('mypage');
-              break;
-          }
         },
       ),
     );

@@ -4,15 +4,17 @@ import 'package:meongtamjeong/features/auth/presentation/screens/profile_setup_s
 import 'package:meongtamjeong/features/character_selection/logic/models/character_model.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/screens/character_detail_screen.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/screens/character_list_screen.dart';
-import 'package:meongtamjeong/features/chat/presentation/screens/chat_screen.dart';
 import 'package:meongtamjeong/features/chat/presentation/screens/file_attachment_screen.dart';
 import 'package:meongtamjeong/features/chat/presentation/screens/image_attachment_screen.dart';
-import 'package:meongtamjeong/features/home/presentation/screens/main_home_screen.dart';
-import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
-import 'package:meongtamjeong/features/phishing/presentation/screens/phishing_screen.dart';
-import 'package:meongtamjeong/features/mypage/presentation/screens/mypage_main_screen.dart';
-import 'package:meongtamjeong/history/screen/chat_history_screen.dart';
+import 'package:meongtamjeong/features/mypage/presentation/screens/heart_recharge_screen.dart';
+import 'package:meongtamjeong/features/mypage/presentation/screens/profile_edit_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
+import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
+// import 'package:meongtamjeong/features/phishing/presentation/screens/phishing_screen.dart';
+// import 'package:meongtamjeong/features/phishing_simulation/presentation/screens/main_simulation_screen.dart';
+// import 'package:meongtamjeong/features/translation/presentation/main_translation_screen.dart';
+// import 'package:meongtamjeong/history/screen/chat_history_screen.dart';
+// import 'package:meongtamjeong/features/mypage/presentation/screens/mypage_main_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -51,12 +53,26 @@ final router = GoRouter(
     ),
 
     GoRoute(
-      path: '/chat',
-      name: 'chat',
+      path: '/main',
+      name: 'main',
       builder: (context, state) {
-        final character = state.extra as CharacterModel;
-        return ChatScreen(character: character);
+        final data = state.extra as Map<String, dynamic>;
+        final character = data['character'] as CharacterModel;
+        final index = data['index'] as int? ?? 2;
+
+        return MainNavigationScreen(character: character, initialIndex: index);
       },
+    ),
+    GoRoute(
+      path: '/profile-edit',
+      name: 'profile-edit',
+      builder: (context, state) => const ProfileEditScreen(),
+    ),
+
+    GoRoute(
+      path: '/heart-recharge',
+      name: 'heart-recharge',
+      builder: (context, state) => const HeartRechargeScreen(),
     ),
 
     GoRoute(
@@ -69,37 +85,6 @@ final router = GoRouter(
       path: '/image-attachment',
       name: 'image-attachment',
       builder: (context, state) => const ImageAttachmentScreen(),
-    ),
-
-    GoRoute(
-      path: '/nav',
-      name: 'nav',
-      builder: (context, state) {
-        final character = state.extra as CharacterModel;
-        return MainNavigationScreen(character: character);
-      },
-    ),
-
-    // 아래는 직접 접근이 필요한 경우만 허용
-    GoRoute(
-      path: '/home',
-      name: 'home',
-      builder: (_, __) => const MainHomeScreen(),
-    ),
-    GoRoute(
-      path: '/phishing',
-      name: 'phishing',
-      builder: (_, __) => const PhishingScreen(),
-    ),
-    GoRoute(
-      path: '/history',
-      name: 'history',
-      builder: (_, __) => const ChatHistoryScreen(),
-    ),
-    GoRoute(
-      path: '/mypage',
-      name: 'mypage',
-      builder: (_, __) => const MyPageScreen(),
     ),
   ],
 );

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../widgets/profile_header.dart';
+import '../widgets/heart_balance_card.dart';
+import '../widgets/menu_list_title.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
@@ -6,8 +9,30 @@ class MyPageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('내 정보')),
-      body: Center(child: Text('프로필 및 설정')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('내 정보'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        foregroundColor: Colors.black,
+        actions: const [
+          Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.menu)),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        children: const [
+          ProfileHeader(),
+          SizedBox(height: 20),
+          HeartBalanceCard(),
+          SizedBox(height: 20),
+          MenuListTile(icon: Icons.help_outline, label: '자주 묻는 질문'),
+          MenuListTile(icon: Icons.campaign_outlined, label: '공지사항'),
+          MenuListTile(icon: Icons.privacy_tip_outlined, label: '개인정보 보호정책'),
+          MenuListTile(icon: Icons.description_outlined, label: '앱 이용약관'),
+          MenuListTile(icon: Icons.info_outline, label: '앱 정보'),
+        ],
+      ),
     );
   }
 }

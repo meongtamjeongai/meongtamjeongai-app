@@ -9,12 +9,12 @@ import '../widgets/custom_bottom_nav_bar.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   final CharacterModel character;
-  final int? initialIndex; // 초기 인덱스 설정용
+  final int initialIndex;
 
   const MainNavigationScreen({
     super.key,
     required this.character,
-    this.initialIndex,
+    this.initialIndex = 2,
   });
 
   @override
@@ -24,32 +24,41 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late int _currentIndex;
 
-  late final List<Widget> _screens;
-
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialIndex ?? 2; // 기본값은 채팅 화면
-    _screens = [
+    _currentIndex = widget.initialIndex;
+  }
+
+  @override
+  void didUpdateWidget(covariant MainNavigationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // index 값이 바뀌었을 때만 상태 갱신
+    if (widget.initialIndex != oldWidget.initialIndex) {
+      setState(() {
+        _currentIndex = widget.initialIndex;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screens = [
       const MainHomeScreen(),
       const PhishingScreen(),
       ChatScreen(character: widget.character),
       const ChatHistoryScreen(),
       const MyPageScreen(),
     ];
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          print('탭 클릭됨: $index (이전: $_currentIndex)');
           setState(() {
             _currentIndex = index;
-            print('상태 변경 완료: $_currentIndex');
           });
         },
       ),

@@ -104,7 +104,10 @@ class CharacterDetailScreen extends StatelessWidget {
                 height: 56,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    context.pushNamed('nav', extra: character);
+                    context.pushNamed(
+                      'main',
+                      extra: {'character': character, 'index': 2},
+                    );
                   },
                   icon: const Icon(Icons.chat_bubble_outline),
                   label: const Text(

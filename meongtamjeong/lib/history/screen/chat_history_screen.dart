@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:meongtamjeong/features/chat/logic/providers/chat_provider.dart';
-import 'package:meongtamjeong/features/chat/presentation/screens/chat_screen.dart';
+// import 'package:meongtamjeong/features/chat/presentation/screens/chat_screen.dart';
 
 class ChatHistoryScreen extends StatefulWidget {
   const ChatHistoryScreen({super.key});

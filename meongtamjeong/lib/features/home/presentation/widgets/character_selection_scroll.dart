@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../character_selection/logic/providers/character_provider.dart';
-import '../../../character_selection/logic/models/character_model.dart';
+// import '../../../character_selection/logic/models/character_model.dart';
 
 class CharacterSelectionScroll extends StatelessWidget {
   const CharacterSelectionScroll({super.key});

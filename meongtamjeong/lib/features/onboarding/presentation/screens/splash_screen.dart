@@ -36,7 +36,7 @@ class SplashScreen extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               '다양한 멍탐정들과 대화하며 피싱을 예방해요',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],
         ),

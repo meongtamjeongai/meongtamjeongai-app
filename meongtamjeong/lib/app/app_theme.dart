@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 final appTheme = ThemeData(
-  fontFamily: 'NotoSansKR', // 👉 pubspec.yaml에 등록한 이름
+  fontFamily: 'NotoSansKR',
   textTheme: const TextTheme(
     displayLarge: TextStyle(fontWeight: FontWeight.w700, fontSize: 32),
     displayMedium: TextStyle(fontWeight: FontWeight.w600, fontSize: 24),

@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
               const Text(
                 '멍탐정과 함께\n피싱을 예방하세요!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 48),
 

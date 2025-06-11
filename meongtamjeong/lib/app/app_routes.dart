@@ -33,9 +33,13 @@ final router = GoRouter(
     ),
 
     GoRoute(
+      path: '/nickname-setup',
+      builder: (context, state) => const ProfileSetupScreen(), // 별명 입력 및 저장
+    ),
+
+    GoRoute(
       path: '/character-select',
-      name: 'character-select',
-      builder: (context, state) => const ProfileSetupScreen(),
+      builder: (context, state) => const CharacterListScreen(),
     ),
 
     GoRoute(

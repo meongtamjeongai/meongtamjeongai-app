@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "430251881182",
+    "project_id": "meongtamjeong-9dc6a",
+    "storage_bucket": "meongtamjeong-9dc6a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430251881182:android:8c169f48e59b732463084f",
+        "android_client_info": {
+          "package_name": "shop.meong.meongtamjeong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430251881182-b2hn3k7e6tl6e8rslv1o39l6d6frp55a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-ZhKWu0D336bKN2PmnR2XO5y41wNsvxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430251881182-b2hn3k7e6tl6e8rslv1o39l6d6frp55a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

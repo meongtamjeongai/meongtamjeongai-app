@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:meongtamjeong/core/services/auth_service.dart';
+import 'package:go_router/go_router.dart';
 
 class GoogleLoginButton extends StatelessWidget {
   const GoogleLoginButton({super.key});
@@ -47,8 +50,18 @@ class GoogleLoginButton extends StatelessWidget {
     );
   }
 
-  void _handleGoogleLogin(BuildContext context) {
-    print('구글 로그인 시작');
-    // TODO: 구글 로그인 연동
+  Future<void> _handleGoogleLogin(BuildContext context) async {
+    final authService = context.read<AuthService>();
+
+    try {
+      await authService.signInWithGoogle();
+      if (context.mounted && authService.isAuthenticated) {
+        context.go('/nickname-setup'); // 로그인 후 별명 설정 페이지로
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('구글 로그인 실패: $e')));
+    }
   }
 }

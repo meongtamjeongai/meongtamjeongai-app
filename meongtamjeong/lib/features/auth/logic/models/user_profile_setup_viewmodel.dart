@@ -1,32 +1,36 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/auth/data/datasources/dummy_user_api.dart';
+import 'package:meongtamjeong/app/service_locator.dart';
+import 'package:meongtamjeong/core/services/api_service.dart';
 
 class UserProfileSetupViewModel extends ChangeNotifier {
   File? _profileImage;
-  final TextEditingController _nicknameController = TextEditingController();
-  bool _isNicknameConfirmed = false;
+  final TextEditingController _usernameController = TextEditingController();
+  bool _isUsernameConfirmed = false;
   bool _isLoading = false;
   String? _errorMessage;
 
+  final ApiService _apiService = locator<ApiService>();
+
   UserProfileSetupViewModel() {
-    _nicknameController.addListener(notifyListeners);
+    _usernameController.addListener(notifyListeners);
   }
 
   // Getters
   File? get profileImage => _profileImage;
-  TextEditingController get nicknameController => _nicknameController;
-  bool get isNicknameConfirmed => _isNicknameConfirmed;
+  TextEditingController get usernameController => _usernameController;
+  bool get isUsernameConfirmed => _isUsernameConfirmed;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  bool get canSubmit => _isNicknameValid && _isNicknameConfirmed && !_isLoading;
+  bool get canSubmit => _isUsernameValid && _isUsernameConfirmed && !_isLoading;
 
-  bool get _isNicknameValid {
-    final nickname = _nicknameController.text.trim();
-    return nickname.isNotEmpty &&
-        nickname.runes.length <= 10 &&
-        nickname.trim().isNotEmpty;
+  bool get _isUsernameValid {
+    final username = _usernameController.text.trim();
+    return username.isNotEmpty &&
+        username.runes.length <= 10 &&
+        username.trim().isNotEmpty;
   }
 
   // Actions
@@ -35,9 +39,9 @@ class UserProfileSetupViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void confirmNickname() {
-    final nickname = _nicknameController.text.trim();
-    final error = validateNickname(nickname);
+  void confirmUsername() {
+    final username = _usernameController.text.trim();
+    final error = validateUsername(username);
 
     if (error != null) {
       _errorMessage = error;
@@ -45,15 +49,15 @@ class UserProfileSetupViewModel extends ChangeNotifier {
       return;
     }
 
-    _isNicknameConfirmed = true;
+    _isUsernameConfirmed = true;
     _errorMessage = null;
     notifyListeners();
   }
 
-  String? validateNickname(String nickname) {
-    if (nickname.isEmpty) return '별명을 입력해주세요';
-    if (nickname.trim().isEmpty) return '공백만 입력할 수 없어요';
-    if (nickname.runes.length > 10) return '10자 이내로 입력해주세요';
+  String? validateUsername(String username) {
+    if (username.isEmpty) return '이름을 입력해주세요';
+    if (username.trim().isEmpty) return '공백만 입력할 수 없어요';
+    if (username.runes.length > 10) return '10자 이내로 입력해주세요';
     return null;
   }
 
@@ -65,7 +69,21 @@ class UserProfileSetupViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await DummyUserApi.sendUserProfile(this);
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        _errorMessage = '로그인된 사용자가 없습니다.';
+        return false;
+      }
+
+      final uid = user.uid;
+      final username = _usernameController.text.trim();
+
+      await _apiService.saveUserProfile(
+        uid: uid,
+        username: username,
+        profileImageFile: _profileImage,
+      );
+
       return true;
     } catch (e) {
       _errorMessage = '프로필 설정 중 오류가 발생했습니다.';
@@ -78,7 +96,7 @@ class UserProfileSetupViewModel extends ChangeNotifier {
 
   Map<String, dynamic> toJson() {
     return {
-      'nickname': _nicknameController.text.trim(),
+      'username': _usernameController.text.trim(),
       'hasImage': _profileImage != null,
       'imagePath': _profileImage?.path,
     };
@@ -86,7 +104,7 @@ class UserProfileSetupViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    _nicknameController.dispose();
+    _usernameController.dispose();
     super.dispose();
   }
 }

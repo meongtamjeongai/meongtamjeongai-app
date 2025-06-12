@@ -1,11 +1,11 @@
 class UserProfile {
-  final String nickname;
+  final String username;
   final String? profileImagePath;
 
-  UserProfile({required this.nickname, this.profileImagePath});
+  UserProfile({required this.username, this.profileImagePath});
 
   Map<String, dynamic> toJson() => {
-    'nickname': nickname,
+    'username': username,
     'profileImagePath': profileImagePath,
   };
 }

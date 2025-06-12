@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:meongtamjeong/app/service_locator.dart';
+
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/core/services/auth_service.dart';
+import 'package:meongtamjeong/features/mypage/logic/models/profile_edit_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'app_routes.dart';
@@ -16,8 +18,11 @@ class MeongTamJeong extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CharacterProvider()),
-        Provider(create: (_) => getIt<AuthService>()),
-        Provider(create: (_) => getIt<ApiService>()),
+        ChangeNotifierProvider(
+          create: (_) => ProfileEditViewModel(locator<ApiService>()),
+        ),
+        ChangeNotifierProvider(create: (_) => locator<AuthService>()),
+        Provider(create: (_) => locator<ApiService>()),
         //  다른 Provider 추가 가능
       ],
       child: MaterialApp.router(

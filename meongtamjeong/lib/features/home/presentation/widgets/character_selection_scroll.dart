@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../../character_selection/logic/providers/character_provider.dart';
-// import '../../../character_selection/logic/models/character_model.dart';
+import 'package:meongtamjeong/features/character_selection/logic/providers/character_provider.dart';
 
 class CharacterSelectionScroll extends StatelessWidget {
   const CharacterSelectionScroll({super.key});
@@ -48,7 +47,22 @@ class CharacterSelectionScroll extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(character.imagePath, width: 60, height: 60),
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.grey[200],
+                        backgroundImage:
+                            character.profileImageUrl != null
+                                ? NetworkImage(character.profileImageUrl!)
+                                : null,
+                        child:
+                            character.profileImageUrl == null
+                                ? const Icon(
+                                  Icons.pets,
+                                  size: 32,
+                                  color: Colors.grey,
+                                )
+                                : null,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         character.name,
@@ -59,7 +73,7 @@ class CharacterSelectionScroll extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${character.personality}, ${character.specialty}',
+                        character.description ?? '성격 정보 없음',
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.black54,

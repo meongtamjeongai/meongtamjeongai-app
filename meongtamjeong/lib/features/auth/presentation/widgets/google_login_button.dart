@@ -56,7 +56,7 @@ class GoogleLoginButton extends StatelessWidget {
     try {
       await authService.signInWithGoogle();
       if (context.mounted && authService.isAuthenticated) {
-        context.go('/nickname-setup'); // 로그인 후 별명 설정 페이지로
+        context.go('/username-setup'); // 로그인 후 별명 설정 페이지로
       }
     } catch (e) {
       ScaffoldMessenger.of(

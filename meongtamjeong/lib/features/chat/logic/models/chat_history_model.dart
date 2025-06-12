@@ -1,12 +1,12 @@
-import '../../../character_selection/logic/models/character_model.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 
 class ChatHistoryModel {
-  final CharacterModel character;
+  final PersonaModel persona;
   final String lastMessage;
   final DateTime lastTimestamp;
 
   ChatHistoryModel({
-    required this.character,
+    required this.persona,
     required this.lastMessage,
     required this.lastTimestamp,
   });

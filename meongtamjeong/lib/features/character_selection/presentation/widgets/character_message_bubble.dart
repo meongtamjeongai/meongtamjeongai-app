@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../logic/models/character_model.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 
 class CharacterMessageBubble extends StatelessWidget {
-  final CharacterModel character;
+  final PersonaModel character;
   final String message;
   final bool isFromCharacter;
 
@@ -29,8 +29,15 @@ class CharacterMessageBubble extends StatelessWidget {
           if (isBot) ...[
             CircleAvatar(
               radius: 26,
-              backgroundImage: AssetImage(character.imagePath),
               backgroundColor: Colors.grey[300],
+              backgroundImage:
+                  character.profileImageUrl != null
+                      ? NetworkImage(character.profileImageUrl!)
+                      : null,
+              child:
+                  character.profileImageUrl == null
+                      ? const Icon(Icons.pets, size: 26, color: Colors.grey)
+                      : null,
             ),
             const SizedBox(width: 10),
           ],

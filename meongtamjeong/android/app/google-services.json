@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "430251881182-okeplsi312rc7d63ccfthl7u63runl42.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "shop.meong.meongtamjeong",
+            "certificate_hash": "7866f4e5f6d890323624271d7556b6c120de4a7c"
+          }
+        },
+        {
           "client_id": "430251881182-b2hn3k7e6tl6e8rslv1o39l6d6frp55a.apps.googleusercontent.com",
           "client_type": 3
         }

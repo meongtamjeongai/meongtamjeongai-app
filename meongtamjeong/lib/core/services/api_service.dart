@@ -1,6 +1,8 @@
 // meongtamdjeong_flutter/lib/services/api_service.dart
 // FastAPI 백엔드와의 HTTP 통신을 담당하는 서비스 (QueuedInterceptorsWrapper 적용)
 
+import 'dart:io';
+
 import 'package:dio/dio.dart'; // 'as dio' 접두사 제거 (일반적인 사용 방식으로 복귀)
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,10 +13,50 @@ import 'package:meongtamjeong/domain/models/persona_update_model.dart';
 import 'package:meongtamjeong/domain/models/token_model.dart';
 import 'package:meongtamjeong/domain/models/user_model.dart';
 import 'package:meongtamjeong/domain/models/user_update_model.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ApiService {
   late final Dio _dio;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  Future<void> saveUserProfile({
+    required String uid,
+    required String username,
+    File? profileImageFile,
+  }) async {
+    try {
+      final formData = FormData();
+
+      formData.fields.addAll([
+        MapEntry('uid', uid),
+        MapEntry('username', username),
+      ]);
+
+      if (profileImageFile != null) {
+        formData.files.add(
+          MapEntry(
+            'profile_image',
+            await MultipartFile.fromFile(
+              profileImageFile.path,
+              filename: 'profile.jpg',
+              contentType: MediaType('image', 'jpeg'),
+            ),
+          ),
+        );
+      }
+
+      final response = await _dio.post('/users/profile', data: formData);
+
+      if (response.statusCode == 200) {
+        print('✅ 사용자 프로필 저장 성공');
+      } else {
+        throw Exception('❌ 사용자 프로필 저장 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('ApiService: saveUserProfile Error: $e');
+      rethrow;
+    }
+  }
 
   static const String _baseUrl = "https://meong.shop/api/v1";
 
@@ -85,6 +127,8 @@ class ApiService {
       ),
     );
   }
+
+  // Dio get dio => _dio; //user_profile_service.dart gatter용
 
   Future<bool> _refreshAccessToken() async {
     try {

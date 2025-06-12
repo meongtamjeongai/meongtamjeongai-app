@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/auth/presentation/screens/login_screen.dart';
 import 'package:meongtamjeong/features/auth/presentation/screens/profile_setup_screen.dart';
-import 'package:meongtamjeong/features/character_selection/logic/models/character_model.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/screens/character_detail_screen.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/screens/character_list_screen.dart';
 import 'package:meongtamjeong/features/chat/presentation/screens/file_attachment_screen.dart';
@@ -33,8 +33,9 @@ final router = GoRouter(
     ),
 
     GoRoute(
-      path: '/nickname-setup',
-      builder: (context, state) => const ProfileSetupScreen(), // 별명 입력 및 저장
+      path: '/username-setup',
+      name: 'username-setup',
+      builder: (context, state) => const ProfileSetupScreen(),
     ),
 
     GoRoute(
@@ -52,7 +53,7 @@ final router = GoRouter(
       path: '/character-detail',
       name: 'character-detail',
       builder: (context, state) {
-        final character = state.extra as CharacterModel;
+        final character = state.extra as PersonaModel;
         return CharacterDetailScreen(character: character);
       },
     ),
@@ -62,9 +63,9 @@ final router = GoRouter(
       name: 'main',
       builder: (context, state) {
         final data = state.extra as Map<String, dynamic>;
-        final character = data['character'] as CharacterModel;
+        final persona = data['persona'] as PersonaModel;
         final index = data['index'] as int? ?? 2;
-        return MainNavigationScreen(character: character, initialIndex: index);
+        return MainNavigationScreen(persona: persona, initialIndex: index);
       },
     ),
 

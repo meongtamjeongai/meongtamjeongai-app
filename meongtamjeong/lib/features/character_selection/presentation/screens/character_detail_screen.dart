@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../logic/models/character_model.dart';
-import '../widgets/character_message_bubble.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 
 class CharacterDetailScreen extends StatelessWidget {
-  final CharacterModel character;
+  final PersonaModel character;
 
   const CharacterDetailScreen({super.key, required this.character});
 
@@ -46,8 +45,19 @@ class CharacterDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundImage: AssetImage(character.imagePath),
                         backgroundColor: Colors.white,
+                        backgroundImage:
+                            character.profileImageUrl != null
+                                ? NetworkImage(character.profileImageUrl!)
+                                : null,
+                        child:
+                            character.profileImageUrl == null
+                                ? const Icon(
+                                  Icons.pets,
+                                  size: 40,
+                                  color: Colors.grey,
+                                )
+                                : null,
                       ),
                       const SizedBox(width: 20),
                       Column(
@@ -61,16 +71,13 @@ class CharacterDetailScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '성격: ${character.personality}',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '특징: ${character.specialty}',
-                            style: const TextStyle(fontSize: 18),
-                          ),
+                          if (character.description != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              '소개: ${character.description}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
                         ],
                       ),
                     ],
@@ -81,18 +88,22 @@ class CharacterDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // 대화 예시 리스트
+            // 대화 예시 영역 (systemPrompt 일부 사용)
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: character.conversationExamples.length,
-                itemBuilder: (context, index) {
-                  return CharacterMessageBubble(
-                    character: character,
-                    message: character.conversationExamples[index],
-                    isFromCharacter: index % 2 == 0,
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF2F4F6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    character.systemPrompt,
+                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  ),
+                ),
               ),
             ),
 

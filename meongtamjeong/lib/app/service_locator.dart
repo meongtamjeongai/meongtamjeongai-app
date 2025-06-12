@@ -1,11 +1,13 @@
 import 'package:get_it/get_it.dart';
-import 'package:meongtamjeong/core/services/auth_service.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/core/services/auth_service.dart';
 
-final getIt = GetIt.instance;
+final GetIt locator = GetIt.instance;
 
 void setupLocator() {
-  // 싱글톤으로 등록
-  getIt.registerLazySingleton<AuthService>(() => AuthService());
-  getIt.registerLazySingleton<ApiService>(() => ApiService());
+  // ApiService 등록
+  locator.registerLazySingleton<ApiService>(() => ApiService());
+
+  // AuthService 등록
+  locator.registerLazySingleton<AuthService>(() => AuthService());
 }

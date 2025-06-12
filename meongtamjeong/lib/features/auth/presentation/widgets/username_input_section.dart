@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class NicknameInputSection extends StatelessWidget {
+class UsernameInputSection extends StatelessWidget {
   final TextEditingController controller;
   final bool isConfirmed;
   final VoidCallback onConfirm;
   final Function(String) onError;
   final Function(String) onSuccess;
 
-  const NicknameInputSection({
+  const UsernameInputSection({
     super.key,
     required this.controller,
     required this.isConfirmed,
@@ -16,12 +16,12 @@ class NicknameInputSection extends StatelessWidget {
     required this.onSuccess,
   });
 
-  void _showNicknameHelpDialog(BuildContext context) {
+  void _showUsernameHelpDialog(BuildContext context) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('별명이란?'),
+            title: const Text('사용자 이름이란?'),
             content: const Text(
               '멍탐정과 대화할 때 사용되는 이름입니다.\n\n'
               '다른 사용자에게는 노출되지 않으며,\n자신만의 이름을 자유롭게 정할 수 있어요!\n\n'
@@ -37,11 +37,11 @@ class NicknameInputSection extends StatelessWidget {
     );
   }
 
-  bool get _isNicknameValid {
-    final nickname = controller.text.trim();
-    return nickname.isNotEmpty &&
-        nickname.runes.length <= 10 &&
-        nickname.trim().isNotEmpty;
+  bool get _isUsernameValid {
+    final username = controller.text.trim();
+    return username.isNotEmpty &&
+        username.runes.length <= 10 &&
+        username.trim().isNotEmpty;
   }
 
   @override
@@ -52,13 +52,13 @@ class NicknameInputSection extends StatelessWidget {
         Row(
           children: [
             const Text(
-              '별명 설정',
+              '사용자 이름 설정',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const Text(' *', style: TextStyle(fontSize: 18, color: Colors.red)),
             const SizedBox(width: 4),
             GestureDetector(
-              onTap: () => _showNicknameHelpDialog(context),
+              onTap: () => _showUsernameHelpDialog(context),
               child: const Icon(
                 Icons.help_outline,
                 size: 20,
@@ -75,7 +75,7 @@ class NicknameInputSection extends StatelessWidget {
                 controller: controller,
                 maxLength: 20,
                 decoration: InputDecoration(
-                  hintText: '별명을 입력해주세요',
+                  hintText: '사용자 이름을 입력해주세요',
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding: const EdgeInsets.symmetric(
@@ -112,7 +112,7 @@ class NicknameInputSection extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             ElevatedButton(
-              onPressed: _isNicknameValid ? onConfirm : null,
+              onPressed: _isUsernameValid ? onConfirm : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                     isConfirmed ? Colors.green : const Color(0xFF2962FF),
@@ -149,7 +149,7 @@ class NicknameInputSection extends StatelessWidget {
             ),
             if (isConfirmed)
               const Text(
-                '별명 설정 완료 ✓',
+                '사용자 이름 설정 완료 ✓',
                 style: TextStyle(
                   color: Colors.green,
                   fontSize: 12,

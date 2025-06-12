@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/chat/presentation/screens/chat_screen.dart';
 import 'package:meongtamjeong/features/home/presentation/screens/main_home_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/mypage_main_screen.dart';
 import 'package:meongtamjeong/features/phishing/presentation/screens/phishing_screen.dart';
 import 'package:meongtamjeong/history/screen/chat_history_screen.dart';
-import 'package:meongtamjeong/features/character_selection/logic/models/character_model.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  final CharacterModel character;
+  final PersonaModel persona;
   final int initialIndex;
 
   const MainNavigationScreen({
     super.key,
-    required this.character,
+    required this.persona,
     this.initialIndex = 2,
   });
 
@@ -46,7 +46,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final screens = [
       const MainHomeScreen(),
       const PhishingScreen(),
-      ChatScreen(character: widget.character),
+      ChatScreen(character: widget.persona),
       const ChatHistoryScreen(),
       const MyPageScreen(),
     ];

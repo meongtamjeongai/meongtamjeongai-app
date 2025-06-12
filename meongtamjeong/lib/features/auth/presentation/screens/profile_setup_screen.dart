@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/features/auth/logic/models/user_profile_setup_viewmodel.dart';
-import 'package:meongtamjeong/features/auth/presentation/widgets/nickname_input_section.dart';
+import 'package:meongtamjeong/features/auth/presentation/widgets/username_input_section.dart';
 import 'package:meongtamjeong/features/auth/presentation/widgets/profile_image_picker.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
@@ -84,13 +84,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           onError: (msg) => _showDialog('오류', msg),
                         ),
                         const SizedBox(height: 32),
-                        NicknameInputSection(
-                          controller: _viewModel.nicknameController,
-                          isConfirmed: _viewModel.isNicknameConfirmed,
+                        UsernameInputSection(
+                          controller: _viewModel.usernameController,
+                          isConfirmed: _viewModel.isUsernameConfirmed,
                           onConfirm: () {
-                            _viewModel.confirmNickname();
-                            if (_viewModel.isNicknameConfirmed) {
-                              _showDialog('완료', '별명이 설정되었습니다.');
+                            _viewModel.confirmUsername();
+                            if (_viewModel.isUsernameConfirmed) {
+                              _showDialog('완료', '이름이 설정되었습니다.');
                             } else if (_viewModel.errorMessage != null) {
                               _showDialog('알림', _viewModel.errorMessage!);
                             }
@@ -98,6 +98,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           onError: (msg) => _showDialog('알림', msg),
                           onSuccess: (msg) => _showDialog('완료', msg),
                         ),
+
                         const Spacer(),
                       ],
                     ),

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../../character_selection/logic/models/character_model.dart';
-import '../../logic/providers/chat_provider.dart';
-import '../widgets/preview_attachment_list.dart';
-import '../widgets/attachment_button.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
+import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
+import 'package:meongtamjeong/features/chat/logic/providers/chat_provider.dart';
+import 'package:meongtamjeong/features/chat/presentation/widgets/attachment_button.dart';
+import 'package:meongtamjeong/features/chat/presentation/widgets/preview_attachment_list.dart';
+import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
 
 class ChatScreen extends StatelessWidget {
-  final CharacterModel character;
+  final PersonaModel character;
 
   const ChatScreen({super.key, required this.character});
 
@@ -22,7 +23,7 @@ class ChatScreen extends StatelessWidget {
 }
 
 class ChatScreenContent extends StatefulWidget {
-  final CharacterModel character;
+  final PersonaModel character;
 
   const ChatScreenContent({super.key, required this.character});
 
@@ -35,14 +36,14 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ChatProvider>(context);
+    final provider = context.watch<ChatProvider>();
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(widget.character),
             Expanded(
               child: ListView.builder(
                 controller: provider.scrollController,
@@ -52,16 +53,10 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                 ),
                 itemCount: provider.messages.length,
                 itemBuilder: (context, index) {
-                  final msg = provider.messages[index];
-                  final isFromBot = msg['from'] == 'bot';
-
-                  final currentDate = msg['time'] ?? DateTime.now();
+                  final ChatMessageModel msg = provider.messages[index];
+                  final currentDate = msg.time;
                   final previousDate =
-                      index > 0
-                          ? provider.messages[index - 1]['time'] ??
-                              DateTime.now()
-                          : null;
-
+                      index > 0 ? provider.messages[index - 1].time : null;
                   final showDate =
                       previousDate == null ||
                       !DateUtils.isSameDay(currentDate, previousDate);
@@ -83,15 +78,14 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                         ),
                       CharacterMessageBubble(
                         character: widget.character,
-                        message: msg['text'] ?? '',
-                        isFromCharacter: isFromBot,
+                        message: msg.text,
+                        isFromCharacter: msg.isFromBot,
                       ),
                     ],
                   );
                 },
               ),
             ),
-            // 첨부파일 미리보기
             PreviewAttachmentList(
               images: provider.pendingImages,
               files: provider.pendingFiles,
@@ -102,11 +96,10 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
           ],
         ),
       ),
-      // bottomNavigationBar 제거 - MainNavigationScreen에서 관리
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(PersonaModel character) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -126,12 +119,19 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage(widget.character.imagePath),
               backgroundColor: Colors.white,
+              backgroundImage:
+                  character.profileImageUrl != null
+                      ? NetworkImage(character.profileImageUrl!)
+                      : null,
+              child:
+                  character.profileImageUrl == null
+                      ? const Icon(Icons.pets, size: 40, color: Colors.grey)
+                      : null,
             ),
             const SizedBox(height: 8),
             Text(
-              widget.character.name,
+              character.name,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -172,17 +172,24 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                   borderSide: BorderSide.none,
                 ),
               ),
+              // onTap: () {
+              //   provider.scrollToBottom();
+              // }, 메세지 입력시 자동으로 스크롤 제일 하단으로 이동(현재는 필요없어서 주석처리)
+              onSubmitted: (_) => _handleSend(provider),
             ),
           ),
           IconButton(
             icon: const Icon(Icons.send, color: Colors.blue),
-            onPressed: () {
-              provider.sendMessage(_controller.text, DateTime.now());
-              _controller.clear();
-            },
+            onPressed: () => _handleSend(provider),
           ),
         ],
       ),
     );
+  }
+
+  void _handleSend(ChatProvider provider) {
+    provider.sendMessage(_controller.text, DateTime.now());
+    _controller.clear();
+    FocusScope.of(context).unfocus();
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/auth/presentation/widgets/nickname_input_section.dart';
+import 'package:meongtamjeong/features/auth/presentation/widgets/username_input_section.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileEditScreen extends StatefulWidget {
@@ -12,12 +12,12 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   File? _profileImage;
-  final TextEditingController _nicknameController = TextEditingController();
-  bool _isNicknameConfirmed = false;
+  final TextEditingController _usernameController = TextEditingController();
+  bool _isUsernameConfirmed = false;
 
-  bool get _isNicknameValid {
-    final nickname = _nicknameController.text.trim();
-    return nickname.isNotEmpty && nickname.runes.length <= 10;
+  bool get _isUsernameValid {
+    final username = _usernameController.text.trim();
+    return username.isNotEmpty && username.runes.length <= 10;
   }
 
   void _pickImage() async {
@@ -29,26 +29,26 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     }
   }
 
-  void _confirmNickname() {
-    final nickname = _nicknameController.text.trim();
-    if (nickname.isEmpty || nickname.runes.length > 10) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('별명은 1~10자 이내로 입력해주세요.')));
+  void _confirmUsername() {
+    final username = _usernameController.text.trim();
+    if (username.isEmpty || username.runes.length > 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('사용자 이름은 1~10자 이내로 입력해주세요.')),
+      );
     } else {
-      setState(() => _isNicknameConfirmed = true);
+      setState(() => _isUsernameConfirmed = true);
     }
   }
 
   void _saveProfile() {
-    if (!_isNicknameConfirmed) {
+    if (!_isUsernameConfirmed) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('별명을 먼저 설정해주세요.')));
+      ).showSnackBar(const SnackBar(content: Text('사용자 이름을 먼저 설정해주세요.')));
       return;
     }
 
-    // 저장 로직 TODO
+    // TODO: 저장 로직 연동
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('프로필이 저장되었습니다.')));
@@ -105,10 +105,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            NicknameInputSection(
-              controller: _nicknameController,
-              isConfirmed: _isNicknameConfirmed,
-              onConfirm: _confirmNickname,
+            UsernameInputSection(
+              controller: _usernameController,
+              isConfirmed: _isUsernameConfirmed,
+              onConfirm: _confirmUsername,
               onError:
                   (msg) => ScaffoldMessenger.of(
                     context,

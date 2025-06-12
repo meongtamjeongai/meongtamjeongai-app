@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../logic/models/character_model.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 
 class CharacterInfoDialog extends StatelessWidget {
-  final CharacterModel character;
+  final PersonaModel character;
 
   const CharacterInfoDialog({super.key, required this.character});
 
@@ -19,15 +19,21 @@ class CharacterInfoDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // 캐릭터 이미지
-          Image.asset(
-            character.imagePath,
-            width: 100,
-            height: 100,
-            fit: BoxFit.contain,
+          CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.grey[100],
+            backgroundImage:
+                character.profileImageUrl != null
+                    ? NetworkImage(character.profileImageUrl!)
+                    : null,
+            child:
+                character.profileImageUrl == null
+                    ? const Icon(Icons.pets, size: 40, color: Colors.grey)
+                    : null,
           ),
           const SizedBox(height: 16),
 
-          // 캐릭터 정보 텍스트
+          // 이름
           Text(
             '이름: ${character.name}',
             style: const TextStyle(
@@ -39,24 +45,17 @@ class CharacterInfoDialog extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          Text(
-            '성격: ${character.personality}',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black87,
-              letterSpacing: 1.0,
+          // 설명 (description 사용)
+          if (character.description != null)
+            Text(
+              character.description!,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+                letterSpacing: 1.0,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 4),
-
-          Text(
-            '특징: ${character.specialty}',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black87,
-              letterSpacing: 1.0,
-            ),
-          ),
         ],
       ),
     );

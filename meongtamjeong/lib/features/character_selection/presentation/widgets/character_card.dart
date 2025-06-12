@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../logic/models/character_model.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 
 class CharacterCard extends StatelessWidget {
-  final CharacterModel character;
+  final PersonaModel character;
   final VoidCallback onTap;
 
   const CharacterCard({
@@ -26,9 +26,22 @@ class CharacterCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 캐릭터 이미지
-              Image.asset(character.imagePath, width: 90, height: 90),
+              // 이미지 로드
+              CircleAvatar(
+                radius: 45,
+                backgroundColor: Colors.grey[100],
+                backgroundImage:
+                    character.profileImageUrl != null
+                        ? NetworkImage(character.profileImageUrl!)
+                        : null,
+                child:
+                    character.profileImageUrl == null
+                        ? const Icon(Icons.pets, size: 40, color: Colors.grey)
+                        : null,
+              ),
               const SizedBox(height: 12),
+
+              // 이름
               Text(
                 character.name,
                 style: const TextStyle(
@@ -38,17 +51,20 @@ class CharacterCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                '${character.personality}, ${character.specialty}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  letterSpacing: 1.0,
+
+              // 설명
+              if (character.description != null)
+                Text(
+                  character.description!,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                    letterSpacing: 1.0,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis, // 레이아웃 깨짐 방지
-                maxLines: 2,
-              ),
             ],
           ),
         ),

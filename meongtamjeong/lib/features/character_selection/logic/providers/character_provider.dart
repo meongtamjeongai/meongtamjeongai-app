@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../data/repositories/character_repository.dart';
-import '../models/character_model.dart';
+import 'package:meongtamjeong/app/service_locator.dart';
+import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 
 class CharacterProvider with ChangeNotifier {
-  final CharacterRepository _repository = CharacterRepository();
+  final ApiService _apiService = locator<ApiService>();
 
-  List<CharacterModel> _characters = [];
-  CharacterModel? _selectedCharacter;
+  List<PersonaModel> _characters = [];
+  PersonaModel? _selectedCharacter;
   bool _isLoading = false;
 
-  List<CharacterModel> get characters => _characters;
-  CharacterModel? get selectedCharacter => _selectedCharacter;
+  List<PersonaModel> get characters => _characters;
+  PersonaModel? get selectedCharacter => _selectedCharacter;
   bool get isLoading => _isLoading;
 
   Future<void> loadCharacters() async {
@@ -18,7 +19,7 @@ class CharacterProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _characters = _repository.getCharacters();
+      _characters = await _apiService.getPersonas();
     } catch (e) {
       debugPrint('캐릭터 로딩 오류: $e');
     } finally {
@@ -27,7 +28,7 @@ class CharacterProvider with ChangeNotifier {
     }
   }
 
-  void selectCharacter(CharacterModel character) {
+  void selectCharacter(PersonaModel character) {
     _selectedCharacter = character;
     notifyListeners();
   }

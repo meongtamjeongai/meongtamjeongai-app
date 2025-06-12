@@ -1,63 +1,70 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_selector/file_selector.dart';
-import '../../../character_selection/logic/models/character_model.dart';
+
+import 'package:meongtamjeong/domain/models/persona_model.dart';
+import '../models/chat_message_model.dart';
+import '../models/chat_history_model.dart';
 
 class ChatProvider with ChangeNotifier {
-  final CharacterModel character;
-  final List<Map<String, dynamic>> messages = [];
+  final PersonaModel persona;
+  final List<ChatMessageModel> messages = [];
   final List<File> pendingImages = [];
   final List<File> pendingFiles = [];
   final ScrollController scrollController = ScrollController();
 
-  static final List<Map<String, dynamic>> chatHistories = [];
+  static final List<ChatHistoryModel> chatHistories = [];
 
-  ChatProvider(this.character);
+  ChatProvider(this.persona);
 
   void sendMessage(String text, DateTime time) {
     if (text.trim().isEmpty && pendingImages.isEmpty && pendingFiles.isEmpty)
       return;
 
     if (text.trim().isNotEmpty) {
-      messages.add({'from': 'user', 'text': text.trim(), 'time': time});
+      messages.add(
+        ChatMessageModel(from: 'user', text: text.trim(), time: time),
+      );
     }
 
     for (var img in pendingImages) {
-      messages.add({
-        'from': 'user',
-        'text': '[이미지]',
-        'image': img,
-        'time': time,
-      });
+      messages.add(
+        ChatMessageModel(from: 'user', text: '[이미지]', image: img, time: time),
+      );
     }
 
     for (var file in pendingFiles) {
-      messages.add({
-        'from': 'user',
-        'text': '[파일] ${file.path.split("/").last}',
-        'file': file,
-        'time': time,
-      });
+      messages.add(
+        ChatMessageModel(
+          from: 'user',
+          text: '[파일] ${file.path.split('/').last}',
+          file: file,
+          time: time,
+        ),
+      );
     }
 
-    // 간단한 봇 응답 추가
+    final botMsg = '${persona.name}의 응답이에요!';
     Future.delayed(const Duration(milliseconds: 500), () {
-      final botMsg = '${character.name}의 응답이에요!';
+      messages.add(
+        ChatMessageModel(
+          from: 'bot',
+          text: botMsg,
+          time: time.add(const Duration(seconds: 1)),
+        ),
+      );
 
-      messages.add({
-        'from': 'bot',
-        'text': '${character.name}의 응답이에요!',
-        'time': time.add(const Duration(seconds: 1)),
-      });
-
-      chatHistories.removeWhere((e) => e['character'].name == character.name);
-      chatHistories.add({
-        'character': character,
-        'lastMessage': botMsg,
-        'time': DateTime.now(),
-      });
+      chatHistories.removeWhere((e) => e.persona.name == persona.name);
+      chatHistories.add(
+        ChatHistoryModel(
+          persona: persona,
+          lastMessage: botMsg,
+          lastTimestamp: DateTime.now(),
+        ),
+      );
 
       notifyListeners();
       scrollToBottom();

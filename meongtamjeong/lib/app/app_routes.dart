@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/auth/presentation/screens/login_screen.dart';
@@ -53,8 +54,15 @@ final router = GoRouter(
       path: '/character-detail',
       name: 'character-detail',
       builder: (context, state) {
-        final character = state.extra as PersonaModel;
-        return CharacterDetailScreen(character: character);
+        final extra = state.extra;
+        if (extra == null || extra is! PersonaModel) {
+          debugPrint('❌ state.extra is null or not PersonaModel!');
+          // fallback 화면을 보여주거나 에러 처리
+          return const Scaffold(body: Center(child: Text('잘못된 접근입니다.')));
+        }
+
+        final persona = extra;
+        return CharacterDetailScreen(character: persona);
       },
     ),
 
@@ -62,9 +70,19 @@ final router = GoRouter(
       path: '/main',
       name: 'main',
       builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
-        final persona = data['persona'] as PersonaModel;
+        final extra = state.extra;
+        if (extra == null || extra is! Map) {
+          return const Scaffold(body: Center(child: Text('잘못된 접근입니다.')));
+        }
+
+        final data = extra as Map<String, dynamic>;
+        final persona = data['persona'];
         final index = data['index'] as int? ?? 2;
+
+        if (persona is! PersonaModel) {
+          return const Scaffold(body: Center(child: Text('잘못된 페르소나 데이터입니다.')));
+        }
+
         return MainNavigationScreen(persona: persona, initialIndex: index);
       },
     ),

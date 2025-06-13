@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 
-class CharacterCard extends StatelessWidget {
+class CharacterCard extends StatefulWidget {
   final PersonaModel character;
   final VoidCallback onTap;
 
@@ -12,7 +14,37 @@ class CharacterCard extends StatelessWidget {
   });
 
   @override
+  State<CharacterCard> createState() => _CharacterCardState();
+}
+
+class _CharacterCardState extends State<CharacterCard> {
+  String? _specialty;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSpecialty();
+  }
+
+  Future<void> _loadSpecialty() async {
+    try {
+      final String jsonStr = await rootBundle.loadString(
+        'assets/persona_specialties.json',
+      );
+      final Map<String, dynamic> data = json.decode(jsonStr);
+      setState(() {
+        _specialty = data[widget.character.name] ?? '특징 없음';
+      });
+    } catch (e) {
+      setState(() {
+        _specialty = '특징 로딩 실패';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final character = widget.character;
     final bool hasNetworkImage =
         character.profileImageUrl != null &&
         character.profileImageUrl!.isNotEmpty;
@@ -36,7 +68,7 @@ class CharacterCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: onTap,
+          onTap: widget.onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             child: Column(
@@ -66,18 +98,17 @@ class CharacterCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                if (character.description != null)
-                  Text(
-                    character.description!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                      letterSpacing: 1.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                Text(
+                  _specialty ?? '로딩 중...',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                    letterSpacing: 1.0,
                   ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
               ],
             ),
           ),

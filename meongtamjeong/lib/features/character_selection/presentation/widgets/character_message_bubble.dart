@@ -27,19 +27,31 @@ class CharacterMessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isBot) ...[
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: Colors.grey[300],
-              backgroundImage:
-                  character.profileImageUrl != null
-                      ? NetworkImage(character.profileImageUrl!)
-                      : null,
-              child:
-                  character.profileImageUrl == null
-                      ? const Icon(Icons.pets, size: 26, color: Colors.grey)
-                      : null,
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white, // 흰 배경
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 26,
+                backgroundColor: Colors.white,
+                backgroundImage:
+                    character.profileImageUrl != null
+                        ? NetworkImage(character.profileImageUrl!)
+                        : null,
+                child:
+                    character.profileImageUrl == null
+                        ? const Icon(Icons.pets, size: 26, color: Colors.grey)
+                        : null,
+              ),
             ),
-
             const SizedBox(width: 10),
           ],
           Flexible(

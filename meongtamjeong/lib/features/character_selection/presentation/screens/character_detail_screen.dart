@@ -86,7 +86,7 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
                 onPressed: () {
                   context.pushNamed(
                     'main',
-                    extra: {'character': character, 'index': 2},
+                    extra: {'persona': character, 'index': 2},
                   );
                 },
                 icon: const Icon(Icons.chat_bubble_outline),

@@ -38,7 +38,7 @@ class MainFeaturesGrid extends StatelessWidget {
                 context.goNamed(
                   'main',
                   extra: {
-                    'character': currentCharacter,
+                    'persona': currentCharacter,
                     'index': feature['index'],
                   },
                 );

@@ -118,7 +118,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                           context.goNamed(
                             'main',
                             extra: {
-                              'character': persona,
+                              'persona': persona.copyWith(),
                               'index': 2, // 대화하기 탭
                             },
                           );

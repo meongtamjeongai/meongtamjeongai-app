@@ -23,12 +23,12 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFE6F4F9),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30), // 상단 여백
+            const SizedBox(height: 40), // 상단 여백
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(

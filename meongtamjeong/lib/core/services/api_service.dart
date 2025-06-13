@@ -278,6 +278,21 @@ class ApiService {
     return [];
   }
 
+  Future<String?> getPresignedImageUrl(String objectKey) async {
+    try {
+      final response = await _dio.get(
+        '/storage/presigned-url/download',
+        queryParameters: {'object_key': objectKey},
+      );
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data['url'] as String?;
+      }
+    } catch (e) {
+      print("ApiService: getPresignedImageUrl Error: $e");
+    }
+    return null;
+  }
+
   Future<ConversationModel?> startNewConversation({
     required int personaId,
     String? title,

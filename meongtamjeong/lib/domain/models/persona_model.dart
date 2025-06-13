@@ -5,7 +5,8 @@ class PersonaModel {
   final int id;
   final String name;
   final String? description;
-  final String? profileImageUrl; // Pydantic의 HttpUrl은 Dart에서 String으로 받음
+  String? profileImageUrl;
+  final String? profileImageKey; // Pydantic의 HttpUrl은 Dart에서 String으로 받음
   final String systemPrompt;
   final bool isPublic;
   final DateTime createdAt;
@@ -18,6 +19,7 @@ class PersonaModel {
     required this.name,
     this.description,
     this.profileImageUrl,
+    this.profileImageKey,
     required this.systemPrompt,
     required this.isPublic,
     required this.createdAt,
@@ -26,12 +28,39 @@ class PersonaModel {
     // this.creator,
   });
 
+  PersonaModel copyWith({
+    int? id,
+    String? name,
+    String? description,
+    String? profileImageUrl,
+    String? profileImageKey,
+    String? systemPrompt,
+    bool? isPublic,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? createdByUserId,
+  }) {
+    return PersonaModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      profileImageKey: profileImageKey ?? this.profileImageKey,
+      systemPrompt: systemPrompt ?? this.systemPrompt,
+      isPublic: isPublic ?? this.isPublic,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdByUserId: createdByUserId ?? this.createdByUserId,
+    );
+  }
+
   factory PersonaModel.fromJson(Map<String, dynamic> json) {
     return PersonaModel(
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,
       profileImageUrl: json['profile_image_url'] as String?,
+      profileImageKey: json['profile_image_key'] as String?,
       systemPrompt: json['system_prompt'] as String,
       isPublic: json['is_public'] as bool? ?? true,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -49,6 +78,7 @@ class PersonaModel {
       'name': name,
       'description': description,
       'profile_image_url': profileImageUrl,
+      'profile_image_key': profileImageKey,
       'system_prompt': systemPrompt,
       'is_public': isPublic,
       'created_at': createdAt.toIso8601String(),

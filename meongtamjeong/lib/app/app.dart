@@ -3,6 +3,7 @@ import 'package:meongtamjeong/app/service_locator.dart';
 
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/core/services/auth_service.dart';
+import 'package:meongtamjeong/features/auth/logic/providers/user_profile_provider.dart';
 import 'package:meongtamjeong/features/mypage/logic/models/profile_edit_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,7 @@ class MeongTamJeong extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CharacterProvider()),
+        ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(
           create: (_) => ProfileEditViewModel(locator<ApiService>()),
         ),

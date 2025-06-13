@@ -39,6 +39,7 @@ class CharacterMessageBubble extends StatelessWidget {
                       ? const Icon(Icons.pets, size: 26, color: Colors.grey)
                       : null,
             ),
+
             const SizedBox(width: 10),
           ],
           Flexible(

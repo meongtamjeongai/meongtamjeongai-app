@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:meongtamjeong/features/auth/logic/providers/user_profile_provider.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final nickname = '말해죠';
-    final userId = '@tellme1234';
+    final userProfile = context.watch<UserProfileProvider>();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -28,7 +29,7 @@ class ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  nickname,
+                  userProfile.username,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -36,7 +37,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  userId,
+                  userProfile.userId,
                   style: const TextStyle(fontSize: 18, color: Colors.black54),
                 ),
               ],

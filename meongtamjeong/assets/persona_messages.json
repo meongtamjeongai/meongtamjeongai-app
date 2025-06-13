@@ -1,0 +1,86 @@
+{
+  "뽀삐": [
+    {
+      "from": "persona",
+      "message": "앗! 훈련생~ 오늘도 훈련 준비됐지요?"
+    },
+    {
+      "from": "user",
+      "message": "뭐에 대한 훈련이지?"
+    },
+    {
+      "from": "persona",
+      "message": "오늘은 피싱 문자 훈련입니다! 조심해야 한다구요~"
+    }
+  ],
+  "코코": [
+    {
+      "from": "persona",
+      "message": "친구야 기운 내~ 내가 있잖아~"
+    },
+    {
+      "from": "user",
+      "message": "피싱이 뭐야?"
+    },
+    {
+      "from": "persona",
+      "message": "헤헷~ 피싱은 속이려는 거지! 근데 넌 안 속을 거야~!"
+    }
+  ],
+  "츄순이": [
+    {
+      "from": "persona",
+      "message": "허여~ 자네 또 왔는겨~?"
+    },
+    {
+      "from": "user",
+      "message": "응, 피싱에 대해 알고 싶어"
+    },
+    {
+      "from": "persona",
+      "message": "그랬슈~? 이거 그냥 보면 모르겠쥬? 내가 알려줄게유~"
+    }
+  ],
+  "백두": [
+    {
+      "from": "persona",
+      "message": "주인님, 오늘도 훈련 준비됐습니다. 시작할까요?"
+    },
+    {
+      "from": "user",
+      "message": "응. 피싱 메시지 좀 알려줘"
+    },
+    {
+      "from": "persona",
+      "message": "명령을 수행합니다. 피싱 메시지는 다음과 같습니다..."
+    }
+  ],
+  "바우형": [
+    {
+      "from": "persona",
+      "message": "동생~ 걱정 마~ 오늘도 내가 도와줄게~"
+    },
+    {
+      "from": "user",
+      "message": "잘 모르겠어 ㅠㅠ"
+    },
+    {
+      "from": "persona",
+      "message": "괜찮아~ 다 그런거야~ 하나하나 배워가면 되는거지!"
+    }
+  ],
+  "도도": [
+    {
+      "from": "persona",
+      "message": "후배, 오늘도 훈련인가요?"
+    },
+    {
+      "from": "user",
+      "message": "네! 알려주세요"
+    },
+    {
+      "from": "persona",
+      "message": "좋아요... 생각을 좀 해볼게요. 생각 없이 낸 문제는 후배한테는 쉬울지도 모르니까요."
+    }
+  ]
+}

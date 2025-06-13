@@ -111,6 +111,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/persona_messages.json
     - assets/images/
     - assets/images/icons/
     - assets/images/characters/

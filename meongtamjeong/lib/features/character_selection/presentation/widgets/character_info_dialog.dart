@@ -31,6 +31,7 @@ class CharacterInfoDialog extends StatelessWidget {
                     ? const Icon(Icons.pets, size: 40, color: Colors.grey)
                     : null,
           ),
+
           const SizedBox(height: 16),
 
           // 이름

@@ -93,7 +93,7 @@ class DetectionMainScreen extends StatelessWidget {
           }
           context.goNamed(
             'main',
-            extra: {'character': currentCharacter, 'index': index},
+            extra: {'persona': currentCharacter, 'index': index},
           );
         },
       ),

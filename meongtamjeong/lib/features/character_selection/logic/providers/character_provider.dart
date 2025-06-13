@@ -19,7 +19,28 @@ class CharacterProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _characters = await _apiService.getPersonas();
+      final fetched = await _apiService.getPersonas();
+
+      // presigned URL 처리
+      _characters = await Future.wait(
+        fetched.map((persona) async {
+          // profileImageUrl이 없고 profileImageKey만 있는 경우 presigned URL 요청
+          if ((persona.profileImageUrl == null ||
+                  persona.profileImageUrl!.isEmpty) &&
+              persona.profileImageKey != null) {
+            try {
+              final url = await _apiService.getPresignedImageUrl(
+                persona.profileImageKey!,
+              );
+              return persona.copyWith(profileImageUrl: url);
+            } catch (e) {
+              debugPrint('presigned URL 요청 실패: ${persona.name} → $e');
+              return persona; // 실패 시 그대로 반환
+            }
+          }
+          return persona; // 이미지 URL 이미 존재하는 경우
+        }).toList(),
+      );
     } catch (e) {
       debugPrint('캐릭터 로딩 오류: $e');
     } finally {

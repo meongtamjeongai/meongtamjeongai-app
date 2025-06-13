@@ -109,8 +109,8 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
           decoration: const BoxDecoration(
             color: Color(0xFFE6F4F9),
             borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(100),
-              bottomRight: Radius.circular(100),
+              bottomLeft: Radius.circular(50),
+              bottomRight: Radius.circular(50),
             ),
           ),
         ),

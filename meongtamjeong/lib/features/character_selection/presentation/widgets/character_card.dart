@@ -13,59 +13,73 @@ class CharacterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.08),
-      child: InkWell(
+    final bool hasNetworkImage =
+        character.profileImageUrl != null &&
+        character.profileImageUrl!.isNotEmpty;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.grey.shade300, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 이미지 로드
-              CircleAvatar(
-                radius: 45,
-                backgroundColor: Colors.grey[100],
-                backgroundImage:
-                    character.profileImageUrl != null
-                        ? NetworkImage(character.profileImageUrl!)
-                        : null,
-                child:
-                    character.profileImageUrl == null
-                        ? const Icon(Icons.pets, size: 40, color: Colors.grey)
-                        : null,
-              ),
-              const SizedBox(height: 12),
-
-              // 이름
-              Text(
-                character.name,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.1,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white,
+                  backgroundImage:
+                      hasNetworkImage
+                          ? NetworkImage(character.profileImageUrl!)
+                          : null,
+                  child:
+                      !hasNetworkImage
+                          ? const Icon(Icons.pets, size: 30, color: Colors.grey)
+                          : null,
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 12),
 
-              // 설명
-              if (character.description != null)
                 Text(
-                  character.description!,
+                  character.name,
                   style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    letterSpacing: 1.0,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.1,
                   ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
                 ),
-            ],
+                const SizedBox(height: 8),
+
+                if (character.description != null)
+                  Text(
+                    character.description!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                      letterSpacing: 1.0,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

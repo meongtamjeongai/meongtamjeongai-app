@@ -169,17 +169,21 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          // 메시지 전송 중에는 첨부 버튼 비활성화
           AttachmentButton(
-            onImageTap: provider.pickImages,
-            //onFileTap: provider.pickFiles,
+            onImageTap: provider.isSendingMessage ? null : provider.pickImages,
+            onFileTap: null,
+            //onFileTap: provider.isSendingMessage ? null : provider.pickFiles,
           ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: _controller,
               maxLines: null,
+              // 메시지 전송 중에는 입력창 비활성화
+              enabled: !provider.isSendingMessage,
               decoration: InputDecoration(
-                hintText: '메시지를 입력하세요',
+                hintText: provider.isSendingMessage ? '응답을 기다리는 중...' : '메시지를 입력하세요',
                 filled: true,
                 fillColor: Colors.grey[100],
                 contentPadding: const EdgeInsets.symmetric(
@@ -194,18 +198,34 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
               onSubmitted: (_) => _handleSend(provider),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.blue),
-            onPressed: () => _handleSend(provider),
-          ),
+          // 메시지 전송 중에는 로딩 인디케이터 표시, 아니면 전송 버튼 표시
+          provider.isSendingMessage
+              ? const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 3),
+                  ),
+                )
+              : IconButton(
+                  icon: const Icon(Icons.send, color: Colors.blue),
+                  onPressed: () => _handleSend(provider),
+                ),
         ],
       ),
     );
   }
 
-  void _handleSend(ChatProvider provider) {
-    provider.sendMessage(_controller.text, DateTime.now());
+  void _handleSend(ChatProvider provider) async {
+    if (provider.isSendingMessage) return; // 중복 전송 방지
+    
+    final textToSend = _controller.text;
     _controller.clear();
     FocusScope.of(context).unfocus();
+    
+    await provider.sendMessage(textToSend);
   }
+
+
 }

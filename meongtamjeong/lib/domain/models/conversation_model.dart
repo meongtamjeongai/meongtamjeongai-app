@@ -2,6 +2,7 @@
 // 백엔드로부터 받는 대화방 정보를 담는 모델 (ConversationResponse 대응)
 
 import 'package:meongtamjeong/domain/models/persona_model.dart';
+import 'package:meongtamjeong/domain/models/message_model.dart';
 
 class ConversationModel {
   final int id;
@@ -77,3 +78,27 @@ class ConversationModel {
 //     };
 //   }
 // }
+
+// 백엔드의 schemas.message.ChatMessageResponse 에 대응하는 모델
+class ChatMessageResponse {
+  final MessageModel userMessage;
+  final MessageModel aiMessage;
+  final List<String> suggestedUserQuestions;
+  final bool isReadyToMoveOn;
+
+  ChatMessageResponse({
+    required this.userMessage,
+    required this.aiMessage,
+    required this.suggestedUserQuestions,
+    required this.isReadyToMoveOn,
+  });
+
+  factory ChatMessageResponse.fromJson(Map<String, dynamic> json) {
+    return ChatMessageResponse(
+      userMessage: MessageModel.fromJson(json['user_message']),
+      aiMessage: MessageModel.fromJson(json['ai_message']),
+      suggestedUserQuestions: List<String>.from(json['suggested_user_questions']),
+      isReadyToMoveOn: json['is_ready_to_move_on'],
+    );
+  }
+}

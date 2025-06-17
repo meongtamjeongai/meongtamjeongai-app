@@ -3,7 +3,7 @@
 
 import 'dart:io';
 
-import 'package:dio/dio.dart'; // 'as dio' 접두사 제거 (일반적인 사용 방식으로 복귀)
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
@@ -249,7 +249,7 @@ class ApiService {
 
       if (response.statusCode == 200 && response.data != null) {
         print("ApiService: Account deactivation request successful.");
-        return response.data as Map<String, dynamic>; // {"message": "..."}
+        return response.data as Map<String, dynamic>;
       }
     } catch (e) {
       print("ApiService: deactivateAccount Error: $e");
@@ -333,7 +333,7 @@ class ApiService {
     return [];
   }
 
-  Future<List<MessageModel>?> sendNewMessage(
+  Future<ChatMessageResponse?> sendNewMessage(
     int conversationId,
     String content,
   ) async {
@@ -343,9 +343,7 @@ class ApiService {
         data: {'content': content},
       );
       if (response.statusCode == 201 && response.data != null) {
-        return (response.data as List)
-            .map((json) => MessageModel.fromJson(json))
-            .toList();
+        return ChatMessageResponse.fromJson(response.data as Map<String, dynamic>);
       }
     } catch (e) {
       print("ApiService: sendNewMessage Error: $e");

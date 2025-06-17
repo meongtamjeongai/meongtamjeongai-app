@@ -20,9 +20,11 @@ class ChatProvider with ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
+  bool _isSendingMessage = false;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  bool get isSendingMessage => _isSendingMessage;
 
   List<ChatMessageModel> messages = [];
 
@@ -71,47 +73,56 @@ class ChatProvider with ChangeNotifier {
       }
   }
 
-  void sendMessage(String text, DateTime time) {
-    if (text.trim().isEmpty && pendingImages.isEmpty) return;
+  Future<void> sendMessage(String text) async {
+    final content = text.trim();
+    if (content.isEmpty) return;    
+    
+    _isSendingMessage = true;
+    notifyListeners();
 
-    if (text.trim().isNotEmpty) {
-      messages.add(
-        ChatMessageModel(from: 'user', text: text.trim(), time: time),
+    final optimisticUserMessage = ChatMessageModel(
+      from: 'user',
+      text: content,
+      time: DateTime.now(),
+    );
+    messages.add(optimisticUserMessage);
+    scrollToBottom();
+    
+    try {
+
+      final chatResponse = await _apiService.sendNewMessage(conversationId, content);
+
+      if (chatResponse != null) {
+
+        final aiMessage = ChatMessageModel(
+          from: chatResponse.aiMessage.senderType.name,
+          text: chatResponse.aiMessage.content,
+          time: chatResponse.aiMessage.createdAt,
+        );
+        messages.add(aiMessage);
+
+        // TODO: 제안 질문(suggested_user_questions) UI에 반영하는 로직 추가
+        // print('🤖 AI 제안 질문: ${chatResponse.suggestedUserQuestions}');
+
+      } else {
+        // API 응답이 null인 경우 (오류)
+        throw Exception('API로부터 응답을 받지 못했습니다.');
+      }
+    } catch (e) {
+      print('❌ 메시지 전송 실패: $e');
+      // ✏️ 오류 발생 시 사용자에게 피드백
+      final errorMessage = ChatMessageModel(
+        from: 'ai',
+        text: '죄송합니다, 메시지 전송에 실패했어요. 멍! 다시 시도해주세요.',
+        time: DateTime.now(),
       );
-    }
-
-    for (var img in pendingImages) {
-      messages.add(
-        ChatMessageModel(from: 'user', text: '[이미지]', image: img, time: time),
-      );
-    }
-
-    final botMsg = '${persona.name}의 응답이에요!';
-    Future.delayed(const Duration(milliseconds: 500), () {
-      messages.add(
-        ChatMessageModel(
-          from: 'ai',
-          text: botMsg,
-          time: time.add(const Duration(seconds: 1)),
-        ),
-      );
-
-      chatHistories.removeWhere((e) => e.persona.name == persona.name);
-      chatHistories.add(
-        ChatHistoryModel(
-          persona: persona,
-          lastMessage: botMsg,
-          lastTimestamp: DateTime.now(),
-        ),
-      );
-
+      messages.add(errorMessage);
+    } finally {
+      // ✏️ 전송 완료 상태로 변경
+      _isSendingMessage = false;
       notifyListeners();
       scrollToBottom();
-    });
-
-    pendingImages.clear();
-    notifyListeners();
-    scrollToBottom();
+    }
   }
 
   void pickImages() async {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:meongtamjeong/app/service_locator.dart';
+import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/domain/models/conversation_model.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
 import 'package:meongtamjeong/features/chat/logic/providers/chat_provider.dart';
@@ -8,12 +11,9 @@ import 'package:meongtamjeong/features/chat/presentation/widgets/attachment_butt
 import 'package:meongtamjeong/features/chat/presentation/widgets/preview_attachment_list.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
 
-import 'package:meongtamjeong/app/service_locator.dart';
-import 'package:meongtamjeong/core/services/api_service.dart';
-import 'package:meongtamjeong/domain/models/conversation_model.dart';
-
 class ChatScreen extends StatelessWidget {
-  final ConversationModel conversation; 
+  final ConversationModel conversation;
+
   const ChatScreen({super.key, required this.conversation});
 
   @override
@@ -51,50 +51,65 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
           children: [
             _buildHeader(widget.conversation.persona),
             Expanded(
-              child: ListView.builder(
-                controller: provider.scrollController,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 16,
-                ),
-                itemCount: provider.messages.length,
-                itemBuilder: (context, index) {
-                  final ChatMessageModel msg = provider.messages[index];
-                  final currentDate = msg.time;
-                  final previousDate =
-                      index > 0 ? provider.messages[index - 1].time : null;
-                  final showDate =
-                      previousDate == null ||
-                      !DateUtils.isSameDay(currentDate, previousDate);
+              child: Consumer<ChatProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (showDate)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12, bottom: 8),
-                          child: Text(
-                            DateFormat.yMMMMd('ko_KR').format(currentDate),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
+                  if (provider.errorMessage != null) {
+                    return Center(
+                      child: Text(provider.errorMessage!),
+                    );
+                  }
+
+                  return ListView.builder(
+                    controller: provider.scrollController,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 16,
+                    ),
+                    itemCount: provider.messages.length,
+                    itemBuilder: (context, index) {
+                      final ChatMessageModel msg = provider.messages[index];
+                      final currentDate = msg.time;
+                      final previousDate =
+                          index > 0 ? provider.messages[index - 1].time : null;
+                      final showDate = previousDate == null ||
+                          !DateUtils.isSameDay(currentDate, previousDate);
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (showDate)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12, bottom: 8),
+                              child: Text(
+                                DateFormat.yMMMMd('ko_KR').format(currentDate),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
+                          CharacterMessageBubble(
+                            character: widget.conversation.persona,
+                            message: msg.text,
+                            isFromCharacter: msg.isFromBot,
                           ),
-                        ),
-                      CharacterMessageBubble(
-                        character: widget.conversation.persona,
-                        message: msg.text,
-                        isFromCharacter: msg.isFromBot,
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   );
                 },
               ),
             ),
             PreviewAttachmentList(
               images: provider.pendingImages,
+              //files: provider.pendingFiles,
               onRemoveImage: provider.removeImage,
+              //onRemoveFile: provider.removeFile,
             ),
             _buildInputBar(provider),
           ],
@@ -154,7 +169,10 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          AttachmentButton(onImageTap: provider.pickImages),
+          AttachmentButton(
+            onImageTap: provider.pickImages,
+            //onFileTap: provider.pickFiles,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -173,9 +191,6 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              // onTap: () {
-              //   provider.scrollToBottom();
-              // }, 메세지 입력시 자동으로 스크롤 제일 하단으로 이동(현재는 필요없어서 주석처리)
               onSubmitted: (_) => _handleSend(provider),
             ),
           ),

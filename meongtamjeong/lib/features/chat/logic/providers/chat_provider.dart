@@ -7,6 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
 
+import 'package:meongtamjeong/domain/models/message_model.dart' as domain_message;
+import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
+
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 import '../models/chat_message_model.dart';
 import '../models/chat_history_model.dart';
@@ -15,7 +18,14 @@ class ChatProvider with ChangeNotifier {
   final ConversationModel conversation;
   final ApiService _apiService;
 
-  final List<ChatMessageModel> messages = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
+  List<ChatMessageModel> messages = [];
+
   final List<File> pendingImages = [];
   final ScrollController scrollController = ScrollController();
 
@@ -25,7 +35,41 @@ class ChatProvider with ChangeNotifier {
   int get conversationId => conversation.id;
 
   ChatProvider({required this.conversation, required ApiService apiService})
-      : _apiService = apiService;
+      : _apiService = apiService {
+      loadInitialMessages();
+  }
+
+  Future<void> loadInitialMessages() async {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      try {
+          final List<domain_message.MessageModel> fetchedMessages =
+              await _apiService.getConversationMessages(
+                  conversationId,
+                  sortAsc: true,
+              );
+
+          messages = fetchedMessages.map((msg) {
+              return ChatMessageModel(
+                  from: msg.senderType.name, // 'user' or 'ai'
+                  text: msg.content,
+                  time: msg.createdAt,
+              );
+          }).toList();
+
+          print('✅ ${messages.length}개의 메시지를 불러왔습니다.');
+
+      } catch (e) {
+          _errorMessage = '메시지를 불러오는 데 실패했습니다.';
+          print('❌ 메시지 로드 오류: $e');
+      } finally {
+          _isLoading = false;
+          notifyListeners();
+          scrollToBottom();
+      }
+  }
 
   void sendMessage(String text, DateTime time) {
     if (text.trim().isEmpty && pendingImages.isEmpty) return;
@@ -46,7 +90,7 @@ class ChatProvider with ChangeNotifier {
     Future.delayed(const Duration(milliseconds: 500), () {
       messages.add(
         ChatMessageModel(
-          from: 'bot',
+          from: 'ai',
           text: botMsg,
           time: time.add(const Duration(seconds: 1)),
         ),

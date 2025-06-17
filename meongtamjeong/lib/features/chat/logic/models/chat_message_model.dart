@@ -1,7 +1,7 @@
 import 'dart:io';
 
 class ChatMessageModel {
-  final String from; // 'user' or 'bot'
+  final String from; // 'user' or 'ai'
   final String text;
   final File? image;
   final File? file;
@@ -15,7 +15,7 @@ class ChatMessageModel {
     required this.time,
   });
 
-  bool get isFromBot => from == 'bot';
+  bool get isFromBot => from == 'ai';
   bool get isImage => image != null;
   bool get isFile => file != null;
 }

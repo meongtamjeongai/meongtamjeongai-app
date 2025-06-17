@@ -12,12 +12,24 @@ class MyPageScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('내 정보'),
+        automaticallyImplyLeading: false, // 🔹 뒤로가기 제거
         backgroundColor: Colors.white,
-        elevation: 1,
         foregroundColor: Colors.black,
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.1),
+        title: const Text(
+          '내 정보',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
         actions: const [
-          Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.menu)),
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Icon(Icons.menu, color: Colors.black87),
+          ),
         ],
       ),
       body: ListView(

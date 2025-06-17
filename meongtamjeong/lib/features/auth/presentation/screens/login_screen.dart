@@ -33,10 +33,10 @@ class LoginScreen extends StatelessWidget {
 
               // 로그인 버튼들
               const KakaoLoginButton(),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
               const NaverLoginButton(),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
               const GoogleLoginButton(),
               const SizedBox(height: 25),

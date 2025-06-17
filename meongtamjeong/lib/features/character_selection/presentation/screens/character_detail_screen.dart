@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_info_dialog.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
+import 'package:meongtamjeong/app/service_locator.dart';
+import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/domain/models/conversation_model.dart';
 
 class CharacterDetailScreen extends StatefulWidget {
   final PersonaModel character;
@@ -17,6 +20,8 @@ class CharacterDetailScreen extends StatefulWidget {
 
 class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
   List<Map<String, dynamic>> _messages = [];
+  bool _isCreatingConversation = false;
+  final ApiService _apiService = locator<ApiService>();
 
   @override
   void initState() {
@@ -61,12 +66,45 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
     }
   }
 
-  void _startChat() {
-    print('💬 대화 시작 버튼 클릭');
-    context.pushReplacement(
-      '/main',
-      extra: {'persona': widget.character, 'index': 2},
-    );
+  // ✏️ 비동기 함수로 변경하고 API 호출 로직 추가
+  Future<void> _startChat() async {
+    if (_isCreatingConversation) return; // 중복 클릭 방지
+
+    setState(() {
+      _isCreatingConversation = true;
+    });
+
+    try {
+      print('💬 대화 시작 버튼 클릭: ${widget.character.name} (ID: ${widget.character.id})');
+      
+      // API를 호출하여 새 대화방 생성 또는 기존 대화방 정보 가져오기
+      final ConversationModel? conversation = await _apiService.startNewConversation(
+        personaId: widget.character.id,
+      );
+
+      if (conversation != null && mounted) {
+        // 성공 시, 응답받은 conversation 객체를 /main 라우터로 전달
+        context.pushReplacement(
+          '/main',
+          extra: {'conversation': conversation, 'index': 2},
+        );
+      } else {
+        throw Exception('대화방 생성에 실패했습니다.');
+      }
+    } catch (e) {
+      print('❌ 대화방 생성 오류: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('대화방을 시작할 수 없습니다: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCreatingConversation = false;
+        });
+      }
+    }
   }
 
   @override
@@ -119,11 +157,21 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: _startChat,
-                icon: const Icon(Icons.chat_bubble_outline),
-                label: const Text(
-                  '대화시작하기',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                onPressed: _isCreatingConversation ? null : _startChat, // 로딩 중 비활성화
+                icon: _isCreatingConversation
+                    ? Container(
+                        width: 24,
+                        height: 24,
+                        padding: const EdgeInsets.all(2.0),
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      )
+                    : const Icon(Icons.chat_bubble_outline),
+                label: Text(
+                  _isCreatingConversation ? '대화방 준비 중...' : '대화시작하기',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -131,6 +179,7 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  disabledBackgroundColor: Colors.blue.withOpacity(0.7), // 로딩 중 배경색
                 ),
               ),
             ),
@@ -139,4 +188,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
       ),
     );
   }
+
+
 }

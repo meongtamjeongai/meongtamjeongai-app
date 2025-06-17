@@ -8,24 +8,30 @@ import 'package:meongtamjeong/features/chat/presentation/widgets/attachment_butt
 import 'package:meongtamjeong/features/chat/presentation/widgets/preview_attachment_list.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
 
-class ChatScreen extends StatelessWidget {
-  final PersonaModel character;
+import 'package:meongtamjeong/app/service_locator.dart';
+import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/domain/models/conversation_model.dart';
 
-  const ChatScreen({super.key, required this.character});
+class ChatScreen extends StatelessWidget {
+  final ConversationModel conversation; 
+  const ChatScreen({super.key, required this.conversation});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ChatProvider(character),
-      child: ChatScreenContent(character: character),
+      create: (_) => ChatProvider(
+        conversation: conversation,
+        apiService: locator<ApiService>(),
+      ),
+      child: ChatScreenContent(conversation: conversation),
     );
   }
 }
 
 class ChatScreenContent extends StatefulWidget {
-  final PersonaModel character;
+  final ConversationModel conversation;
 
-  const ChatScreenContent({super.key, required this.character});
+  const ChatScreenContent({super.key, required this.conversation});
 
   @override
   State<ChatScreenContent> createState() => _ChatScreenContentState();
@@ -43,7 +49,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(widget.character),
+            _buildHeader(widget.conversation.persona),
             Expanded(
               child: ListView.builder(
                 controller: provider.scrollController,
@@ -77,7 +83,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                           ),
                         ),
                       CharacterMessageBubble(
-                        character: widget.character,
+                        character: widget.conversation.persona,
                         message: msg.text,
                         isFromCharacter: msg.isFromBot,
                       ),

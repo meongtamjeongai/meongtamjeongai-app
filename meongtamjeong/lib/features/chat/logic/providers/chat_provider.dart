@@ -5,12 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_selector/file_selector.dart';
 
+import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/domain/models/conversation_model.dart';
+
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 import '../models/chat_message_model.dart';
 import '../models/chat_history_model.dart';
 
 class ChatProvider with ChangeNotifier {
-  final PersonaModel persona;
+  final ConversationModel conversation;
+  final ApiService _apiService;
+
   final List<ChatMessageModel> messages = [];
   final List<File> pendingImages = [];
   final List<File> pendingFiles = [];
@@ -18,7 +23,11 @@ class ChatProvider with ChangeNotifier {
 
   static final List<ChatHistoryModel> chatHistories = [];
 
-  ChatProvider(this.persona);
+  PersonaModel get persona => conversation.persona; 
+  int get conversationId => conversation.id;
+
+  ChatProvider({required this.conversation, required ApiService apiService})
+      : _apiService = apiService;
 
   void sendMessage(String text, DateTime time) {
     if (text.trim().isEmpty && pendingImages.isEmpty && pendingFiles.isEmpty)

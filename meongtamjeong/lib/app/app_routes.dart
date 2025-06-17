@@ -17,6 +17,7 @@ import 'package:meongtamjeong/features/mypage/presentation/screens/terms_webview
 import 'package:meongtamjeong/features/phishing_detection/presentation/screens/detection_main_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
 import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
+import 'package:meongtamjeong/domain/models/conversation_model.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -76,14 +77,14 @@ final router = GoRouter(
         }
 
         final data = extra as Map<String, dynamic>;
-        final persona = data['persona'];
+        final conversation = data['conversation'];
         final index = data['index'] as int? ?? 2;
 
-        if (persona is! PersonaModel) {
-          return const Scaffold(body: Center(child: Text('잘못된 페르소나 데이터입니다.')));
+        if (conversation is! ConversationModel) {
+          return const Scaffold(body: Center(child: Text('잘못된 대화방 데이터입니다.')));
         }
 
-        return MainNavigationScreen(persona: persona, initialIndex: index);
+        return MainNavigationScreen(conversation: conversation, initialIndex: index);
       },
     ),
 

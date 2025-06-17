@@ -63,56 +63,53 @@ class _CharacterCardState extends State<CharacterCard> {
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: widget.onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white,
-                  backgroundImage:
-                      hasNetworkImage
-                          ? NetworkImage(character.profileImageUrl!)
-                          : null,
-                  child:
-                      !hasNetworkImage
-                          ? const Icon(Icons.pets, size: 30, color: Colors.grey)
-                          : null,
-                ),
-                const SizedBox(height: 12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ClipOval(
+            child:
+                hasNetworkImage
+                    ? Image.network(
+                      character.profileImageUrl!,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                    )
+                    : Container(
+                      width: 60,
+                      height: 60,
+                      color: Colors.grey[200],
+                      child: const Icon(
+                        Icons.pets,
+                        size: 30,
+                        color: Colors.grey,
+                      ),
+                    ),
+          ),
+          const SizedBox(height: 12),
 
-                Text(
-                  character.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                Text(
-                  _specialty ?? '로딩 중...',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    letterSpacing: 1.0,
-                  ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-              ],
+          Text(
+            character.name,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.1,
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+
+          Text(
+            _specialty ?? '로딩 중...',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black54,
+              letterSpacing: 1.0,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ],
       ),
     );
   }

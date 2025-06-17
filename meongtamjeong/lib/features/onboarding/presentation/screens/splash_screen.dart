@@ -12,33 +12,51 @@ class SplashScreen extends StatelessWidget {
       }
     });
 
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image(
-              image: AssetImage('assets/images/characters/example_meong.png'),
-              width: 160,
-              height: 160,
-            ),
-            SizedBox(height: 24),
-            Text(
-              '당신을 지키는 반려 챗봇',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '멍탐정',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              '다양한 멍탐정들과 대화하며 피싱을 예방해요',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          ],
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // const SizedBox(height: 40),
+              const Image(
+                image: AssetImage('assets/images/characters/example_meong.png'),
+                width: 180,
+                height: 180,
+              ),
+              const SizedBox(height: 40),
+              const Text(
+                '멍탐정',
+                style: TextStyle(
+                  fontSize: 33,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                '당신을 지키는 반려 챗봇',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+              // Text(
+              //   '다양한 멍탐정들과 대화하며\n피싱을 예방해요',
+              //   textAlign: TextAlign.center,
+              //   style: TextStyle(
+              //     fontSize: 15,
+              //     color: Colors.grey[700],
+              //     height: 1.5,
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     );

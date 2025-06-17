@@ -18,18 +18,25 @@ class CharacterInfoDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 캐릭터 이미지
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.grey[100],
-            backgroundImage:
-                character.profileImageUrl != null
-                    ? NetworkImage(character.profileImageUrl!)
-                    : null,
+          ClipOval(
             child:
-                character.profileImageUrl == null
-                    ? const Icon(Icons.pets, size: 40, color: Colors.grey)
-                    : null,
+                character.profileImageUrl != null
+                    ? Image.network(
+                      character.profileImageUrl!,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    )
+                    : Container(
+                      width: 160,
+                      height: 160,
+                      color: Colors.white,
+                      child: const Icon(
+                        Icons.pets,
+                        size: 60,
+                        color: Colors.grey,
+                      ),
+                    ),
           ),
 
           const SizedBox(height: 16),

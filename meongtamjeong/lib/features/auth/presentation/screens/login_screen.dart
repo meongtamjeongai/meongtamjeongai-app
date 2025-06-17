@@ -4,8 +4,29 @@ import 'package:meongtamjeong/features/auth/presentation/widgets/kakao_login_but
 import 'package:meongtamjeong/features/auth/presentation/widgets/naver_login_button.dart';
 import 'package:meongtamjeong/features/auth/presentation/widgets/guest_browse_button.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool isLoading = false;
+
+  void _startLogin() {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+  }
+
+  void _resetLoading() {
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +44,6 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 25),
 
-              // 안내 텍스트
               const Text(
                 '멍탐정과 함께\n피싱을 예방하세요!',
                 textAlign: TextAlign.center,
@@ -31,17 +51,26 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 55),
 
-              // 로그인 버튼들
-              const KakaoLoginButton(),
+              KakaoLoginButton(
+                isEnabled: !isLoading,
+                onStartLogin: _startLogin,
+              ),
               const SizedBox(height: 10),
 
-              const NaverLoginButton(),
+              NaverLoginButton(
+                isEnabled: !isLoading,
+                onStartLogin: _startLogin,
+              ),
               const SizedBox(height: 10),
 
-              const GoogleLoginButton(),
+              GoogleLoginButton(
+                isEnabled: !isLoading,
+                onStartLogin: _startLogin,
+                onFinishLogin: _resetLoading,
+              ),
               const SizedBox(height: 25),
 
-              const GuestBrowseButton(),
+              GuestBrowseButton(),
             ],
           ),
         ),

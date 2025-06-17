@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:file_selector/file_selector.dart';
 
 import 'package:meongtamjeong/domain/models/persona_model.dart';
 import '../models/chat_message_model.dart';
@@ -13,7 +12,6 @@ class ChatProvider with ChangeNotifier {
   final PersonaModel persona;
   final List<ChatMessageModel> messages = [];
   final List<File> pendingImages = [];
-  final List<File> pendingFiles = [];
   final ScrollController scrollController = ScrollController();
 
   static final List<ChatHistoryModel> chatHistories = [];
@@ -21,8 +19,7 @@ class ChatProvider with ChangeNotifier {
   ChatProvider(this.persona);
 
   void sendMessage(String text, DateTime time) {
-    if (text.trim().isEmpty && pendingImages.isEmpty && pendingFiles.isEmpty)
-      return;
+    if (text.trim().isEmpty && pendingImages.isEmpty) return;
 
     if (text.trim().isNotEmpty) {
       messages.add(
@@ -33,17 +30,6 @@ class ChatProvider with ChangeNotifier {
     for (var img in pendingImages) {
       messages.add(
         ChatMessageModel(from: 'user', text: '[이미지]', image: img, time: time),
-      );
-    }
-
-    for (var file in pendingFiles) {
-      messages.add(
-        ChatMessageModel(
-          from: 'user',
-          text: '[파일] ${file.path.split('/').last}',
-          file: file,
-          time: time,
-        ),
       );
     }
 
@@ -71,7 +57,6 @@ class ChatProvider with ChangeNotifier {
     });
 
     pendingImages.clear();
-    pendingFiles.clear();
     notifyListeners();
     scrollToBottom();
   }
@@ -88,24 +73,8 @@ class ChatProvider with ChangeNotifier {
     }
   }
 
-  void pickFiles() async {
-    final picked = await openFiles();
-    if (picked.isNotEmpty) {
-      final files = picked.map((x) => File(x.path)).toList();
-      if (pendingFiles.length + files.length <= 4) {
-        pendingFiles.addAll(files);
-        notifyListeners();
-      }
-    }
-  }
-
   void removeImage(File file) {
     pendingImages.remove(file);
-    notifyListeners();
-  }
-
-  void removeFile(File file) {
-    pendingFiles.remove(file);
     notifyListeners();
   }
 

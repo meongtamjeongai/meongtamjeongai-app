@@ -88,9 +88,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
             ),
             PreviewAttachmentList(
               images: provider.pendingImages,
-              files: provider.pendingFiles,
               onRemoveImage: provider.removeImage,
-              onRemoveFile: provider.removeFile,
             ),
             _buildInputBar(provider),
           ],
@@ -150,10 +148,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          AttachmentButton(
-            onImageTap: provider.pickImages,
-            onFileTap: provider.pickFiles,
-          ),
+          AttachmentButton(onImageTap: provider.pickImages),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(

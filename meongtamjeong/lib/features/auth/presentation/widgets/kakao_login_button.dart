@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
 
 class KakaoLoginButton extends StatelessWidget {
-  const KakaoLoginButton({super.key});
+  final bool isEnabled;
+  final VoidCallback onStartLogin;
+
+  const KakaoLoginButton({
+    super.key,
+    required this.isEnabled,
+    required this.onStartLogin,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _handleKakaoLogin(context),
-      child: Image.asset(
-        'assets/images/icons/kakao.png',
-        height: 70,
-        fit: BoxFit.contain,
+      onTap:
+          isEnabled
+              ? () {
+                onStartLogin();
+                // TODO: 카카오 로그인 구현
+                print('카카오 로그인 시작');
+              }
+              : null,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: Image.asset(
+          'assets/images/icons/kakao.png',
+          height: 70,
+          fit: BoxFit.contain,
+        ),
       ),
     );
-  }
-
-  void _handleKakaoLogin(BuildContext context) {
-    print('카카오 로그인 시작');
   }
 }

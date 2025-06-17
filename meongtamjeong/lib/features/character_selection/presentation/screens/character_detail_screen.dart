@@ -24,12 +24,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
     _loadMessages();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _debugNavigationStack(); // ✅ context-safe
-  }
-
   Future<void> _loadMessages() async {
     try {
       final String jsonString = await rootBundle.loadString(

@@ -9,7 +9,7 @@ class KakaoLoginButton extends StatelessWidget {
       onTap: () => _handleKakaoLogin(context),
       child: Image.asset(
         'assets/images/icons/kakao.png',
-        height: 60,
+        height: 70,
         fit: BoxFit.contain,
       ),
     );

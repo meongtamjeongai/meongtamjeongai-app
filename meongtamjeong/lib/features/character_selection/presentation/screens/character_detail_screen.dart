@@ -24,16 +24,49 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
     _loadMessages();
   }
 
-  Future<void> _loadMessages() async {
-    final String jsonString = await rootBundle.loadString(
-      'assets/persona_messages.json',
-    );
-    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _debugNavigationStack(); // ✅ context-safe
+  }
 
-    final List<dynamic> messages = jsonMap[widget.character.name] ?? [];
-    setState(() {
-      _messages = messages.cast<Map<String, dynamic>>();
-    });
+  Future<void> _loadMessages() async {
+    try {
+      final String jsonString = await rootBundle.loadString(
+        'assets/persona_messages.json',
+      );
+      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+      final List<dynamic> messages = jsonMap[widget.character.name] ?? [];
+      setState(() {
+        _messages = messages.cast<Map<String, dynamic>>();
+      });
+    } catch (e) {
+      print('🔥 메시지 로딩 오류: $e');
+    }
+  }
+
+  void _debugNavigationStack() {
+    print('🔍 현재 라우트 경로: ${GoRouterState.of(context).uri.path}');
+    print('🔍 현재 라우트 이름: ${GoRouterState.of(context).name}');
+    print('🔍 canPop: ${GoRouter.of(context).canPop()}');
+  }
+
+  void _navigateBack() {
+    print('🔙 뒤로가기 버튼 클릭');
+    if (GoRouter.of(context).canPop()) {
+      context.pop();
+    } else {
+      context.go('/character-list');
+    }
+  }
+
+  void _startChat() {
+    print('💬 대화 시작 버튼 클릭');
+    context.pushReplacement(
+      '/main',
+      extra: {'persona': widget.character, 'index': 2},
+    );
   }
 
   @override
@@ -45,10 +78,17 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFE6F4F9),
         elevation: 0,
+        automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
-          onPressed: () => context.pop(),
+          onPressed: _navigateBack,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            onPressed: _debugNavigationStack,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -58,8 +98,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
             child: CharacterInfoDialog(character: character),
           ),
           const SizedBox(height: 10),
-
-          // 대화 예시
           Expanded(
             child: ListView.builder(
               itemCount: _messages.length,
@@ -75,20 +113,13 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
               },
             ),
           ),
-
-          // 하단 버튼
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  context.pushNamed(
-                    'main',
-                    extra: {'persona': character, 'index': 2},
-                  );
-                },
+                onPressed: _startChat,
                 icon: const Icon(Icons.chat_bubble_outline),
                 label: const Text(
                   '대화시작하기',

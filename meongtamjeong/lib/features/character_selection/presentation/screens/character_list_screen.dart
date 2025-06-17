@@ -64,6 +64,7 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
                       return CharacterCard(
                         character: character,
                         onTap: () {
+                          print('✅ 선택된 캐릭터: ${character.name}');
                           context.read<CharacterProvider>().selectCharacter(
                             character,
                           );

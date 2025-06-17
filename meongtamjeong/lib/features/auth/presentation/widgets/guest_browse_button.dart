@@ -31,7 +31,7 @@ class GuestBrowseButton extends StatelessWidget {
       child: const Text(
         '로그인 없이 둘러보기',
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 17,
           color: Colors.grey,
           decoration: TextDecoration.underline,
         ),

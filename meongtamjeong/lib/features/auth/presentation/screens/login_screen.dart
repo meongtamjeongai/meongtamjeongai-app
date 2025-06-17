@@ -19,9 +19,9 @@ class LoginScreen extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/images/characters/example_meong.png',
-                height: 200,
+                height: 180,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 25),
 
               // 안내 텍스트
               const Text(
@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 55),
 
               // 로그인 버튼들
               const KakaoLoginButton(),
@@ -39,7 +39,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               const GoogleLoginButton(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
 
               const GuestBrowseButton(),
             ],

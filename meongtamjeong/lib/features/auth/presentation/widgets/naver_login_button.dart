@@ -10,7 +10,7 @@ class NaverLoginButton extends StatelessWidget {
       child: Image.asset(
         'assets/images/icons/naver.png',
         width: double.infinity,
-        height: 60,
+        height: 70,
         fit: BoxFit.contain,
       ),
     );

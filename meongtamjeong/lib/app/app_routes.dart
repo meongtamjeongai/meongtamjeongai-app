@@ -15,6 +15,7 @@ import 'package:meongtamjeong/features/mypage/presentation/screens/privacy_polic
 import 'package:meongtamjeong/features/mypage/presentation/screens/profile_edit_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/terms_webview_screen.dart';
 import 'package:meongtamjeong/features/phishing_detection/presentation/screens/detection_main_screen.dart';
+import 'package:meongtamjeong/features/phishing_detection/presentation/screens/result_detail_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
 import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
@@ -84,7 +85,10 @@ final router = GoRouter(
           return const Scaffold(body: Center(child: Text('잘못된 대화방 데이터입니다.')));
         }
 
-        return MainNavigationScreen(conversation: conversation, initialIndex: index);
+        return MainNavigationScreen(
+          conversation: conversation,
+          initialIndex: index,
+        );
       },
     ),
 
@@ -92,6 +96,12 @@ final router = GoRouter(
       path: '/phishing-detection',
       name: 'phishing-detection',
       builder: (context, state) => const DetectionMainScreen(),
+    ),
+
+    GoRoute(
+      path: '/result',
+      name: 'phishing-result',
+      builder: (context, state) => const ResultDetailScreen(),
     ),
 
     GoRoute(

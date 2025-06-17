@@ -33,7 +33,7 @@ class DetectionMainScreen extends StatelessWidget {
           children: [
             Image.asset(
               'assets/images/characters/example_meong.png',
-              height: 120,
+              height: 130,
             ),
             const SizedBox(height: 10),
             Container(
@@ -44,24 +44,25 @@ class DetectionMainScreen extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: const Text(
-                '“의심스러운 메시지를 받으셨나요? 🤔\n직접 클릭은 위험해요. 캡처해서 올려주세요!\n안전하게 분석해드릴게요.”',
+                '“의심스러운 메시지를 받으셨나요? \n직접 클릭하는건 위험해요🚨 \n캡처해서 올려주세요!\n안전하게 분석해드릴게요.”',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 19,
                   height: 1.6,
                   color: Colors.black87,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
             const SizedBox(height: 40),
             const ImagePickerWidget(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  context.push('/loading'); // 예: 분석 로딩 화면
+                  context.push('/result'); // 예: 분석 로딩 화면
                 },
                 icon: const Icon(Icons.shield, color: Colors.white),
                 label: const Text(

@@ -64,6 +64,8 @@ dependencies:
   # TTS (접근성)
   # flutter_tts: ^3.8.5
 
+  syncfusion_flutter_gauges: ^24.1.41
+
   # 환경변수
   flutter_dotenv: ^5.1.0
 

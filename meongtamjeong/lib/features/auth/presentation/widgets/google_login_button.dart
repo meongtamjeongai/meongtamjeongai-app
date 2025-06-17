@@ -1,25 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:meongtamjeong/core/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meongtamjeong/core/services/auth_service.dart';
 
 class GoogleLoginButton extends StatelessWidget {
-  const GoogleLoginButton({super.key});
+  final bool isEnabled;
+  final VoidCallback onStartLogin;
+  final VoidCallback onFinishLogin;
+
+  const GoogleLoginButton({
+    super.key,
+    required this.isEnabled,
+    required this.onStartLogin,
+    required this.onFinishLogin,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _handleGoogleLogin(context),
-      child: Image.asset(
-        'assets/images/icons/google.png', // 반드시 실제 경로와 파일명 확인
-        width: double.infinity,
-        height: 70,
-        fit: BoxFit.contain,
+      onTap: isEnabled ? () => _handleGoogleLogin(context) : null,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: Image.asset(
+          'assets/images/icons/google.png',
+          width: double.infinity,
+          height: 70,
+          fit: BoxFit.contain,
+        ),
       ),
     );
   }
 
   Future<void> _handleGoogleLogin(BuildContext context) async {
+    onStartLogin();
     final authService = context.read<AuthService>();
 
     try {
@@ -31,6 +44,8 @@ class GoogleLoginButton extends StatelessWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('구글 로그인 실패: $e')));
+    } finally {
+      onFinishLogin();
     }
   }
 }

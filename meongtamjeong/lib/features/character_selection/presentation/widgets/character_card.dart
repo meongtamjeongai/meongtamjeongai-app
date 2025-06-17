@@ -32,8 +32,9 @@ class _CharacterCardState extends State<CharacterCard> {
         'assets/persona_specialties.json',
       );
       final Map<String, dynamic> data = json.decode(jsonStr);
+      final key = widget.character.name.trim();
       setState(() {
-        _specialty = data[widget.character.name] ?? '특징 없음';
+        _specialty = data[key] ?? '특징 없음';
       });
     } catch (e) {
       print('🔴 특징 로딩 에러: $e');

@@ -32,6 +32,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
         foregroundColor: Colors.black,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.1),
+        automaticallyImplyLeading: false,
         title: const Text(
           '지난 대화 보기',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

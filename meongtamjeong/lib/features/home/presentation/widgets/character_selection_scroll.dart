@@ -1,10 +1,43 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/character_selection/logic/providers/character_provider.dart';
 
-class CharacterSelectionScroll extends StatelessWidget {
+class CharacterSelectionScroll extends StatefulWidget {
   const CharacterSelectionScroll({super.key});
+
+  @override
+  State<CharacterSelectionScroll> createState() =>
+      _CharacterSelectionScrollState();
+}
+
+class _CharacterSelectionScrollState extends State<CharacterSelectionScroll> {
+  Map<String, String> _specialties = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSpecialties();
+  }
+
+  Future<void> _loadSpecialties() async {
+    try {
+      final jsonStr = await rootBundle.loadString(
+        'assets/persona_specialties.json',
+      );
+      final Map<String, dynamic> data = json.decode(jsonStr);
+      setState(() {
+        _specialties = data.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
+      });
+    } catch (e) {
+      debugPrint('❌ 특징 로딩 실패: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +60,8 @@ class CharacterSelectionScroll extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final character = characters[index];
+              final specialty = _specialties[character.name] ?? '특징 정보 없음';
+
               return GestureDetector(
                 onTap: () {
                   context.pushNamed('character-detail', extra: character);
@@ -73,7 +108,7 @@ class CharacterSelectionScroll extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        character.description ?? '성격 정보 없음',
+                        specialty,
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.black54,

@@ -29,12 +29,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
     _loadMessages();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _debugNavigationStack(); // ✅ context-safe
-  }
-
   Future<void> _loadMessages() async {
     try {
       final String jsonString = await rootBundle.loadString(
@@ -121,12 +115,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
           onPressed: _navigateBack,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.bug_report),
-            onPressed: _debugNavigationStack,
-          ),
-        ],
       ),
       body: Column(
         children: [

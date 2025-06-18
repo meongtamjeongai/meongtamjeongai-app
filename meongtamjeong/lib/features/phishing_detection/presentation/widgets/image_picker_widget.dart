@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerWidget extends StatefulWidget {
-  const ImagePickerWidget({super.key});
+  final void Function(List<File>)? onImagesChanged; // ✅ 콜백 추가
+
+  const ImagePickerWidget({super.key, this.onImagesChanged});
 
   @override
   State<ImagePickerWidget> createState() => _ImagePickerWidgetState();
@@ -32,6 +34,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
       setState(() {
         selectedImages.addAll(newFiles);
       });
+      widget.onImagesChanged?.call(selectedImages); // ✅ 콜백 호출
     }
   }
 
@@ -39,6 +42,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     setState(() {
       selectedImages.remove(file);
     });
+    widget.onImagesChanged?.call(selectedImages); // ✅ 콜백 호출
   }
 
   Widget _buildAddButton() {
@@ -113,7 +117,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             ),
             SizedBox(height: 8),
             Text(
-              '문자, 카카오톡, 이메일등의 피싱 의심 이미지를 선택하세요',
+              '문자, 카카오톡, 이메일 등의 피싱 의심 이미지를 선택하세요',
               style: TextStyle(fontSize: 15, color: Colors.blueGrey),
               textAlign: TextAlign.center,
             ),

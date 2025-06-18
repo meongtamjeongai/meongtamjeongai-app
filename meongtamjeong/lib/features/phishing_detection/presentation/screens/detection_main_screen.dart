@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/image_picker_widget.dart';
@@ -6,8 +7,42 @@ import 'package:meongtamjeong/navigation/widgets/custom_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:meongtamjeong/features/character_selection/logic/providers/character_provider.dart';
 
-class DetectionMainScreen extends StatelessWidget {
+class DetectionMainScreen extends StatefulWidget {
   const DetectionMainScreen({super.key});
+
+  @override
+  State<DetectionMainScreen> createState() => _DetectionMainScreenState();
+}
+
+class _DetectionMainScreenState extends State<DetectionMainScreen> {
+  List<File> selectedImages = [];
+
+  void _onImagesChanged(List<File> images) {
+    setState(() {
+      selectedImages = images;
+    });
+  }
+
+  void _handleInvestigation(BuildContext context) {
+    if (selectedImages.isEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('⚠️ 이미지가 필요합니다'),
+              content: const Text('이미지를 올려주셔야 피싱 조사가 가능합니다!'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('확인'),
+                ),
+              ],
+            ),
+      );
+    } else {
+      context.push('/result');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,15 +90,13 @@ class DetectionMainScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            const ImagePickerWidget(),
+            ImagePickerWidget(onImagesChanged: _onImagesChanged),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  context.push('/result'); // 예: 분석 로딩 화면
-                },
+                onPressed: () => _handleInvestigation(context),
                 icon: const Icon(Icons.shield, color: Colors.white),
                 label: const Text(
                   '피싱 조사하기',

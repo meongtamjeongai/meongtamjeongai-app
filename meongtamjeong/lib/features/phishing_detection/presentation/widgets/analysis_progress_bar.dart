@@ -16,7 +16,11 @@ class AnalysisProgressBar extends StatelessWidget {
         child: Center(
           child: Text(
             '${percentage.toStringAsFixed(0)}%',
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 44,
+              fontWeight: FontWeight.w800,
+              color: Colors.black87,
+            ),
           ),
         ),
       ),

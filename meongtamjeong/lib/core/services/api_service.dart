@@ -2,7 +2,7 @@
 // FastAPI 백엔드와의 HTTP 통신을 담당하는 서비스 (QueuedInterceptorsWrapper 적용)
 
 import 'dart:io';
-
+import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -13,7 +13,6 @@ import 'package:meongtamjeong/domain/models/persona_update_model.dart';
 import 'package:meongtamjeong/domain/models/token_model.dart';
 import 'package:meongtamjeong/domain/models/user_model.dart';
 import 'package:meongtamjeong/domain/models/user_update_model.dart';
-import 'package:http_parser/http_parser.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -25,35 +24,33 @@ class ApiService {
     File? profileImageFile,
   }) async {
     try {
-      final formData = FormData();
-
-      formData.fields.addAll([
-        MapEntry('uid', uid),
-        MapEntry('username', username),
-      ]);
-
-      if (profileImageFile != null) {
-        formData.files.add(
-          MapEntry(
-            'profile_image',
-            await MultipartFile.fromFile(
-              profileImageFile.path,
-              filename: 'profile.jpg',
-              contentType: MediaType('image', 'jpeg'),
-            ),
+      final form = FormData.fromMap({
+        'username': username,
+        if (profileImageFile != null)
+          'profile_image': await MultipartFile.fromFile(
+            profileImageFile.path,
+            filename: 'profile.${profileImageFile.path.split('.').last}',
+            contentType: MediaType('image', 'jpeg'),
           ),
-        );
+      });
+      print('📤 username: $username');
+      if (profileImageFile != null) {
+        print('📤 image path: ${profileImageFile.path}');
       }
 
-      final response = await _dio.post('/users/profile', data: formData);
+      final response = await _dio.put(
+        '/users/me',
+        data: form,
+        options: Options(), // contentType 생략!
+      );
 
       if (response.statusCode == 200) {
-        print('✅ 사용자 프로필 저장 성공');
+        print('✅ 사용자 프로필 업로드 성공');
       } else {
-        throw Exception('❌ 사용자 프로필 저장 실패: ${response.statusCode}');
+        throw Exception('❌ 프로필 저장 실패: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService: saveUserProfile Error: $e');
+      print('ApiService.saveUserProfile 오류: $e');
       rethrow;
     }
   }
@@ -311,6 +308,22 @@ class ApiService {
     return null;
   }
 
+  Future<bool> deleteConversation(int conversationId) async {
+    try {
+      final response = await _dio.delete('/conversations/$conversationId');
+      if (response.statusCode == 204) {
+        print('✅ 대화방 삭제 성공: $conversationId');
+        return true;
+      } else {
+        print('❌ 대화방 삭제 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('ApiService: deleteConversation Error: $e');
+      rethrow;
+    }
+    return false;
+  }
+
   Future<List<MessageModel>> getConversationMessages(
     int conversationId, {
     int skip = 0,
@@ -343,7 +356,9 @@ class ApiService {
         data: {'content': content},
       );
       if (response.statusCode == 201 && response.data != null) {
-        return ChatMessageResponse.fromJson(response.data as Map<String, dynamic>);
+        return ChatMessageResponse.fromJson(
+          response.data as Map<String, dynamic>,
+        );
       }
     } catch (e) {
       print("ApiService: sendNewMessage Error: $e");
@@ -445,4 +460,6 @@ class ApiService {
     }
     return false;
   }
+
+  Dio get dio => _dio;
 }

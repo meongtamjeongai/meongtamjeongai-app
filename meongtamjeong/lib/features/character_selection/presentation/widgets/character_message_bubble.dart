@@ -1,21 +1,24 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
+import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
 
 class CharacterMessageBubble extends StatelessWidget {
   final PersonaModel character;
-  final String message;
+  final ChatMessageModel messageModel;
   final bool isFromCharacter;
 
   const CharacterMessageBubble({
     super.key,
     required this.character,
-    required this.message,
+    required this.messageModel,
     this.isFromCharacter = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final isBot = isFromCharacter;
+    final isImage = messageModel.image != null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -30,7 +33,7 @@ class CharacterMessageBubble extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white, // 흰 배경
+                color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -72,10 +75,13 @@ class CharacterMessageBubble extends StatelessWidget {
                     ),
                   ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
+                  padding:
+                      isImage
+                          ? EdgeInsets.zero
+                          : const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                   decoration: BoxDecoration(
                     color:
                         isBot
@@ -90,14 +96,25 @@ class CharacterMessageBubble extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Text(
-                    message,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      height: 1.5,
-                      color: Colors.black87,
-                    ),
-                  ),
+                  child:
+                      isImage
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.file(
+                              messageModel.image!,
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                          : Text(
+                            messageModel.text,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                          ),
                 ),
               ],
             ),

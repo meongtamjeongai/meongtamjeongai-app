@@ -6,16 +6,15 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
-
-import 'package:meongtamjeong/domain/models/message_model.dart' as domain_message;
+import 'package:meongtamjeong/domain/models/message_model.dart'
+    as domain_message;
 import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
-
 import 'package:meongtamjeong/domain/models/persona_model.dart';
-import '../models/chat_message_model.dart';
+
 import '../models/chat_history_model.dart';
 
 class ChatProvider with ChangeNotifier {
-  final ConversationModel conversation;
+  late ConversationModel _conversation;
   final ApiService _apiService;
 
   bool _isLoading = false;
@@ -33,113 +32,185 @@ class ChatProvider with ChangeNotifier {
 
   static final List<ChatHistoryModel> chatHistories = [];
 
-  PersonaModel get persona => conversation.persona; 
-  int get conversationId => conversation.id;
+  PersonaModel get persona => _conversation.persona;
+  int get conversationId => _conversation.id;
+  ConversationModel get conversation => _conversation;
 
-  ChatProvider({required this.conversation, required ApiService apiService})
-      : _apiService = apiService {
-      loadInitialMessages();
+  ChatProvider({
+    required ConversationModel conversation,
+    required ApiService apiService,
+  }) : _apiService = apiService {
+    _conversation = conversation;
+    loadInitialMessages();
   }
 
   Future<void> loadInitialMessages() async {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
-      try {
-          final List<domain_message.MessageModel> fetchedMessages =
-              await _apiService.getConversationMessages(
-                  conversationId,
-                  sortAsc: true,
-              );
+    try {
+      final List<domain_message.MessageModel> fetchedMessages =
+          await _apiService.getConversationMessages(
+            conversationId,
+            sortAsc: true,
+          );
 
-          messages = fetchedMessages.map((msg) {
-              return ChatMessageModel(
-                  from: msg.senderType.name, // 'user' or 'ai'
-                  text: msg.content,
-                  time: msg.createdAt,
-              );
+      messages =
+          fetchedMessages.map((msg) {
+            return ChatMessageModel(
+              from: msg.senderType.name,
+              text: msg.content,
+              time: msg.createdAt.toLocal(),
+            );
           }).toList();
 
-          print('✅ ${messages.length}개의 메시지를 불러왔습니다.');
-
-      } catch (e) {
-          _errorMessage = '메시지를 불러오는 데 실패했습니다.';
-          print('❌ 메시지 로드 오류: $e');
-      } finally {
-          _isLoading = false;
-          notifyListeners();
-          scrollToBottom();
-      }
+      print('✅ ${messages.length}개의 메시지를 불러왔습니다.');
+    } catch (e) {
+      _errorMessage = '메시지를 불러오는 데 실패했습니다.';
+      print('❌ 메시지 로드 오류: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+      scrollToBottom();
+    }
   }
 
   Future<void> sendMessage(String text) async {
     final content = text.trim();
-    if (content.isEmpty) return;    
-    
+    if (content.isEmpty) return;
+
     _isSendingMessage = true;
     notifyListeners();
 
+    final now = DateTime.now().toLocal();
     final optimisticUserMessage = ChatMessageModel(
       from: 'user',
       text: content,
-      time: DateTime.now(),
+      time: now,
     );
     messages.add(optimisticUserMessage);
     scrollToBottom();
-    
-    try {
 
-      final chatResponse = await _apiService.sendNewMessage(conversationId, content);
+    try {
+      final chatResponse = await _apiService.sendNewMessage(
+        conversationId,
+        content,
+      );
 
       if (chatResponse != null) {
-
+        final aiMsg = chatResponse.aiMessage;
         final aiMessage = ChatMessageModel(
-          from: chatResponse.aiMessage.senderType.name,
-          text: chatResponse.aiMessage.content,
-          time: chatResponse.aiMessage.createdAt,
+          from: aiMsg.senderType.name,
+          text: aiMsg.content,
+          time: aiMsg.createdAt.toLocal(),
         );
         messages.add(aiMessage);
 
-        // TODO: 제안 질문(suggested_user_questions) UI에 반영하는 로직 추가
-        // print('🤖 AI 제안 질문: ${chatResponse.suggestedUserQuestions}');
+        final latest =
+            aiMessage.time.isAfter(optimisticUserMessage.time)
+                ? aiMessage.time
+                : optimisticUserMessage.time;
 
+        _conversation = _conversation.copyWith(lastMessageAt: latest);
       } else {
-        // API 응답이 null인 경우 (오류)
         throw Exception('API로부터 응답을 받지 못했습니다.');
       }
     } catch (e) {
       print('❌ 메시지 전송 실패: $e');
-      // ✏️ 오류 발생 시 사용자에게 피드백
-      final errorMessage = ChatMessageModel(
-        from: 'ai',
-        text: '죄송합니다, 메시지 전송에 실패했어요. 멍! 다시 시도해주세요.',
-        time: DateTime.now(),
+      messages.add(
+        ChatMessageModel(
+          from: 'ai',
+          text: '죄송합니다, 메시지 전송에 실패했어요. 멍! 다시 시도해주세요.',
+          time: DateTime.now().toLocal(),
+        ),
       );
-      messages.add(errorMessage);
     } finally {
-      // ✏️ 전송 완료 상태로 변경
       _isSendingMessage = false;
       notifyListeners();
       scrollToBottom();
     }
   }
 
-  void pickImages() async {
+  void pickImages(BuildContext context) async {
+    if (pendingImages.isNotEmpty) {
+      _showImageLimitExceededMessage(context);
+      return;
+    }
+
     final picker = ImagePicker();
     final picked = await picker.pickMultiImage();
+
     if (picked.isNotEmpty) {
-      final files = picked.map((x) => File(x.path)).toList();
-      if (pendingImages.length + files.length <= 4) {
-        pendingImages.addAll(files);
-        notifyListeners();
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      for (final x in picked) {
+        final file = File(x.path);
+        final fileSize = await file.length();
+
+        if (fileSize > maxSize) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '❗ ${_formatBytes(fileSize)} 파일은 너무 커요 (최대 5MB까지 가능)',
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          continue;
+        }
+
+        if (pendingImages.length < 2) {
+          pendingImages.add(file);
+        }
       }
+
+      notifyListeners();
     }
+  }
+
+  String _formatBytes(int bytes, [int decimals = 2]) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB"];
+    final i = (bytes.bitLength / 10).floor();
+    return '${(bytes / (1 << (10 * i))).toStringAsFixed(decimals)} ${suffixes[i]}';
+  }
+
+  void _showImageLimitExceededMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('한 번에 1개의 이미지만 첨부 가능합니다.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   void removeImage(File file) {
     pendingImages.remove(file);
     notifyListeners();
+  }
+
+  Future<void> sendImageMessages() async {
+    if (pendingImages.isEmpty) return;
+
+    _isSendingMessage = true;
+    notifyListeners();
+
+    for (final imageFile in pendingImages) {
+      messages.add(
+        ChatMessageModel(
+          from: 'user',
+          text: '',
+          image: imageFile,
+          file: null,
+          time: DateTime.now().toLocal(),
+        ),
+      );
+    }
+
+    pendingImages.clear();
+    _isSendingMessage = false;
+    notifyListeners();
+    scrollToBottom();
   }
 
   void scrollToBottom() {

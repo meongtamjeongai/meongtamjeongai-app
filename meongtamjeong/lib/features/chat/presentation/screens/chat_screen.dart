@@ -5,7 +5,6 @@ import 'package:meongtamjeong/app/service_locator.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
-import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
 import 'package:meongtamjeong/features/chat/logic/providers/chat_provider.dart';
 import 'package:meongtamjeong/features/chat/presentation/widgets/attachment_button.dart';
 import 'package:meongtamjeong/features/chat/presentation/widgets/preview_attachment_list.dart';
@@ -19,10 +18,11 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ChatProvider(
-        conversation: conversation,
-        apiService: locator<ApiService>(),
-      ),
+      create:
+          (_) => ChatProvider(
+            conversation: conversation,
+            apiService: locator<ApiService>(),
+          ),
       child: ChatScreenContent(conversation: conversation),
     );
   }
@@ -39,6 +39,40 @@ class ChatScreenContent extends StatefulWidget {
 
 class _ChatScreenContentState extends State<ChatScreenContent> {
   final TextEditingController _controller = TextEditingController();
+  PersonaModel? _updatedPersona;
+  bool _isFetchingImage = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileImageUrlIfNeeded();
+  }
+
+  void _fetchProfileImageUrlIfNeeded() async {
+    final persona = widget.conversation.persona;
+
+    if ((persona.profileImageUrl == null || persona.profileImageUrl!.isEmpty) &&
+        persona.profileImageKey != null) {
+      setState(() {
+        _isFetchingImage = true;
+      });
+
+      try {
+        final url = await locator<ApiService>().getPresignedImageUrl(
+          persona.profileImageKey!,
+        );
+        setState(() {
+          _updatedPersona = persona.copyWith(profileImageUrl: url);
+          _isFetchingImage = false;
+        });
+      } catch (e) {
+        debugPrint('❌ 프로필 이미지 불러오기 실패: $e');
+        setState(() {
+          _isFetchingImage = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,67 +83,64 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(widget.conversation.persona),
+            _buildHeader(_updatedPersona ?? widget.conversation.persona),
             Expanded(
-              child: Consumer<ChatProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              child:
+                  provider.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : provider.errorMessage != null
+                      ? Center(child: Text(provider.errorMessage!))
+                      : ListView.builder(
+                        controller: provider.scrollController,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 16,
+                        ),
+                        itemCount: provider.messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = provider.messages[index];
+                          final showDate =
+                              index == 0 ||
+                              !DateUtils.isSameDay(
+                                msg.time,
+                                provider.messages[index - 1].time,
+                              );
 
-                  if (provider.errorMessage != null) {
-                    return Center(
-                      child: Text(provider.errorMessage!),
-                    );
-                  }
-
-                  return ListView.builder(
-                    controller: provider.scrollController,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 16,
-                    ),
-                    itemCount: provider.messages.length,
-                    itemBuilder: (context, index) {
-                      final ChatMessageModel msg = provider.messages[index];
-                      final currentDate = msg.time;
-                      final previousDate =
-                          index > 0 ? provider.messages[index - 1].time : null;
-                      final showDate = previousDate == null ||
-                          !DateUtils.isSameDay(currentDate, previousDate);
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (showDate)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12, bottom: 8),
-                              child: Text(
-                                DateFormat.yMMMMd('ko_KR').format(currentDate),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (showDate)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 12,
+                                    bottom: 8,
+                                  ),
+                                  child: Text(
+                                    DateFormat.yMMMMd(
+                                      'ko_KR',
+                                    ).format(msg.time.toLocal()),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
+                              CharacterMessageBubble(
+                                character:
+                                    _updatedPersona ??
+                                    widget.conversation.persona,
+                                messageModel: msg,
+                                isFromCharacter: msg.isFromBot,
                               ),
-                            ),
-                          CharacterMessageBubble(
-                            character: widget.conversation.persona,
-                            message: msg.text,
-                            isFromCharacter: msg.isFromBot,
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
+                            ],
+                          );
+                        },
+                      ),
             ),
             PreviewAttachmentList(
               images: provider.pendingImages,
-              //files: provider.pendingFiles,
               onRemoveImage: provider.removeImage,
-              //onRemoveFile: provider.removeFile,
             ),
             _buildInputBar(provider),
           ],
@@ -119,6 +150,9 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
   }
 
   Widget _buildHeader(PersonaModel character) {
+    final imageUrl = character.profileImageUrl;
+    final hasValidImage = imageUrl != null && imageUrl.isNotEmpty;
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -139,12 +173,9 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
             CircleAvatar(
               radius: 50,
               backgroundColor: Colors.white,
-              backgroundImage:
-                  character.profileImageUrl != null
-                      ? NetworkImage(character.profileImageUrl!)
-                      : null,
+              backgroundImage: hasValidImage ? NetworkImage(imageUrl) : null,
               child:
-                  character.profileImageUrl == null
+                  !hasValidImage
                       ? const Icon(Icons.pets, size: 40, color: Colors.grey)
                       : null,
             ),
@@ -169,21 +200,21 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // 메시지 전송 중에는 첨부 버튼 비활성화
           AttachmentButton(
-            onImageTap: provider.isSendingMessage ? null : provider.pickImages,
-            onFileTap: null,
-            //onFileTap: provider.isSendingMessage ? null : provider.pickFiles,
+            onImageTap:
+                provider.isSendingMessage
+                    ? null
+                    : () => provider.pickImages(context),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: _controller,
               maxLines: null,
-              // 메시지 전송 중에는 입력창 비활성화
               enabled: !provider.isSendingMessage,
               decoration: InputDecoration(
-                hintText: provider.isSendingMessage ? '응답을 기다리는 중...' : '메시지를 입력하세요',
+                hintText:
+                    provider.isSendingMessage ? '응답을 기다리는 중...' : '메시지를 입력하세요',
                 filled: true,
                 fillColor: Colors.grey[100],
                 contentPadding: const EdgeInsets.symmetric(
@@ -198,34 +229,39 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
               onSubmitted: (_) => _handleSend(provider),
             ),
           ),
-          // 메시지 전송 중에는 로딩 인디케이터 표시, 아니면 전송 버튼 표시
           provider.isSendingMessage
               ? const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 3),
-                  ),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blue),
-                  onPressed: () => _handleSend(provider),
+                padding: EdgeInsets.all(12.0),
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 3),
                 ),
+              )
+              : IconButton(
+                icon: const Icon(Icons.send, color: Colors.blue),
+                onPressed: () => _handleSend(provider),
+              ),
         ],
       ),
     );
   }
 
   void _handleSend(ChatProvider provider) async {
-    if (provider.isSendingMessage) return; // 중복 전송 방지
-    
-    final textToSend = _controller.text;
+    if (provider.isSendingMessage) return;
+
+    final textToSend = _controller.text.trim();
     _controller.clear();
     FocusScope.of(context).unfocus();
-    
-    await provider.sendMessage(textToSend);
+
+    // 텍스트가 있으면 먼저 전송
+    if (textToSend.isNotEmpty) {
+      await provider.sendMessage(textToSend);
+    }
+
+    // 이미지가 있으면 전송
+    if (provider.pendingImages.isNotEmpty) {
+      await provider.sendImageMessages();
+    }
   }
-
-
 }

@@ -8,6 +8,7 @@ import 'package:meongtamjeong/features/character_selection/presentation/widgets/
 import 'package:meongtamjeong/app/service_locator.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
+import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
 
 class CharacterDetailScreen extends StatefulWidget {
   final PersonaModel character;
@@ -45,14 +46,7 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
     }
   }
 
-  void _debugNavigationStack() {
-    print('🔍 현재 라우트 경로: ${GoRouterState.of(context).uri.path}');
-    print('🔍 현재 라우트 이름: ${GoRouterState.of(context).name}');
-    print('🔍 canPop: ${GoRouter.of(context).canPop()}');
-  }
-
   void _navigateBack() {
-    print('🔙 뒤로가기 버튼 클릭');
     if (GoRouter.of(context).canPop()) {
       context.pop();
     } else {
@@ -60,24 +54,44 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
     }
   }
 
-  // ✏️ 비동기 함수로 변경하고 API 호출 로직 추가
   Future<void> _startChat() async {
-    if (_isCreatingConversation) return; // 중복 클릭 방지
+    if (_isCreatingConversation) return;
 
     setState(() {
       _isCreatingConversation = true;
     });
 
     try {
-      print('💬 대화 시작 버튼 클릭: ${widget.character.name} (ID: ${widget.character.id})');
-      
-      // API를 호출하여 새 대화방 생성 또는 기존 대화방 정보 가져오기
-      final ConversationModel? conversation = await _apiService.startNewConversation(
-        personaId: widget.character.id,
-      );
+      final ConversationModel? conversation = await _apiService
+          .startNewConversation(personaId: widget.character.id);
 
       if (conversation != null && mounted) {
-        // 성공 시, 응답받은 conversation 객체를 /main 라우터로 전달
+        // ✅ presigned URL 수동 처리
+        if ((conversation.persona.profileImageUrl == null ||
+                conversation.persona.profileImageUrl!.isEmpty) &&
+            conversation.persona.profileImageKey != null) {
+          try {
+            final url = await _apiService.getPresignedImageUrl(
+              conversation.persona.profileImageKey!,
+            );
+            final updatedPersona = conversation.persona.copyWith(
+              profileImageUrl: url,
+            );
+            final updatedConversation = conversation.copyWith(
+              persona: updatedPersona,
+            );
+
+            context.pushReplacement(
+              '/main',
+              extra: {'conversation': updatedConversation, 'index': 2},
+            );
+            return;
+          } catch (e) {
+            print('⚠️ presigned URL 요청 실패: $e');
+          }
+        }
+
+        // presigned URL 불필요하거나 실패 시 그대로 전송
         context.pushReplacement(
           '/main',
           extra: {'conversation': conversation, 'index': 2},
@@ -133,7 +147,13 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
                 final isPersona = msg['from'] == 'persona';
                 return CharacterMessageBubble(
                   character: character,
-                  message: msg['message'],
+                  messageModel: ChatMessageModel(
+                    from: isPersona ? 'ai' : 'user',
+                    text: msg['message'],
+                    image: null, // 여기선 텍스트 메시지만
+                    file: null,
+                    time: DateTime.now(), // 임시
+                  ),
                   isFromCharacter: isPersona,
                 );
               },
@@ -145,21 +165,25 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: _isCreatingConversation ? null : _startChat, // 로딩 중 비활성화
-                icon: _isCreatingConversation
-                    ? Container(
-                        width: 24,
-                        height: 24,
-                        padding: const EdgeInsets.all(2.0),
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3,
-                        ),
-                      )
-                    : const Icon(Icons.chat_bubble_outline),
+                onPressed: _isCreatingConversation ? null : _startChat,
+                icon:
+                    _isCreatingConversation
+                        ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                        : const Icon(Icons.chat_bubble_outline),
                 label: Text(
                   _isCreatingConversation ? '대화방 준비 중...' : '대화시작하기',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -167,7 +191,7 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  disabledBackgroundColor: Colors.blue.withOpacity(0.7), // 로딩 중 배경색
+                  disabledBackgroundColor: Colors.blue.withOpacity(0.7),
                 ),
               ),
             ),
@@ -176,6 +200,4 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
       ),
     );
   }
-
-
 }

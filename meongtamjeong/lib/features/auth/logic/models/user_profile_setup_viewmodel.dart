@@ -13,9 +13,7 @@ class UserProfileSetupViewModel extends ChangeNotifier {
 
   final ApiService _apiService = locator<ApiService>();
 
-  UserProfileSetupViewModel() {
-    _usernameController.addListener(notifyListeners);
-  }
+  UserProfileSetupViewModel();
 
   // Getters
   File? get profileImage => _profileImage;
@@ -33,7 +31,14 @@ class UserProfileSetupViewModel extends ChangeNotifier {
         username.trim().isNotEmpty;
   }
 
-  // Actions
+  void updateUsername(String newText) {
+    if (_usernameController.text != newText) {
+      _usernameController.text = newText;
+      _isUsernameConfirmed = false;
+      notifyListeners();
+    }
+  }
+
   void setProfileImage(File image) {
     _profileImage = image;
     notifyListeners();
@@ -45,12 +50,10 @@ class UserProfileSetupViewModel extends ChangeNotifier {
 
     if (error != null) {
       _errorMessage = error;
-      notifyListeners();
-      return;
+    } else {
+      _isUsernameConfirmed = true;
+      _errorMessage = null;
     }
-
-    _isUsernameConfirmed = true;
-    _errorMessage = null;
     notifyListeners();
   }
 
@@ -62,7 +65,12 @@ class UserProfileSetupViewModel extends ChangeNotifier {
   }
 
   Future<bool> submitProfile() async {
-    if (!canSubmit) return false;
+    if (!canSubmit) {
+      print(
+        '❗ 제출 조건 불충족: valid=$_isUsernameValid, confirmed=$_isUsernameConfirmed, loading=$_isLoading',
+      );
+      return false;
+    }
 
     _isLoading = true;
     _errorMessage = null;
@@ -84,8 +92,10 @@ class UserProfileSetupViewModel extends ChangeNotifier {
         profileImageFile: _profileImage,
       );
 
+      print('✅ 프로필 저장 성공');
       return true;
     } catch (e) {
+      print('❌ 프로필 저장 중 오류: $e');
       _errorMessage = '프로필 설정 중 오류가 발생했습니다.';
       return false;
     } finally {

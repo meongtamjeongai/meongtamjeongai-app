@@ -17,6 +17,7 @@ class PreviewAttachmentList extends StatelessWidget {
 
     return Container(
       height: 90,
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
@@ -25,6 +26,7 @@ class PreviewAttachmentList extends StatelessWidget {
         itemBuilder: (context, index) {
           final image = images[index];
           return Stack(
+            clipBehavior: Clip.none,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -38,13 +40,19 @@ class PreviewAttachmentList extends StatelessWidget {
               Positioned(
                 right: -6,
                 top: -6,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.cancel,
-                    size: 20,
-                    color: Colors.redAccent,
+                child: GestureDetector(
+                  onTap: () => onRemoveImage(image),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: const Icon(
+                      Icons.cancel,
+                      size: 18,
+                      color: Colors.redAccent,
+                    ),
                   ),
-                  onPressed: () => onRemoveImage(image),
                 ),
               ),
             ],

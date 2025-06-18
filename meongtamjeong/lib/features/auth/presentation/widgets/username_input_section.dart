@@ -6,6 +6,7 @@ class UsernameInputSection extends StatelessWidget {
   final VoidCallback onConfirm;
   final Function(String) onError;
   final Function(String) onSuccess;
+  final void Function(String)? onChanged; // ✅ 추가
 
   const UsernameInputSection({
     super.key,
@@ -14,6 +15,7 @@ class UsernameInputSection extends StatelessWidget {
     required this.onConfirm,
     required this.onError,
     required this.onSuccess,
+    this.onChanged, // ✅ 추가
   });
 
   void _showUsernameHelpDialog(BuildContext context) {
@@ -73,6 +75,7 @@ class UsernameInputSection extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: controller,
+                onChanged: onChanged, // ✅ 콜백 연결
                 maxLength: 20,
                 decoration: InputDecoration(
                   hintText: '사용자 이름을 입력해주세요',

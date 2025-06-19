@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meongtamjeong/core/utils/no_whitespace_input_formatter.dart';
 
 class UsernameInputSection extends StatelessWidget {
   final TextEditingController controller;
@@ -77,6 +78,7 @@ class UsernameInputSection extends StatelessWidget {
                 controller: controller,
                 onChanged: onChanged, // ✅ 콜백 연결
                 maxLength: 20,
+                inputFormatters: [NoWhitespaceInputFormatter()],
                 decoration: InputDecoration(
                   hintText: '사용자 이름을 입력해주세요',
                   filled: true,

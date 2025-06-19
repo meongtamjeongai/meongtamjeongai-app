@@ -1,61 +1,30 @@
+// features/profile_edit/presentation/screens/profile_edit_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/auth/presentation/widgets/username_input_section.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meongtamjeong/features/mypage/logic/models/profile_edit_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:meongtamjeong/features/auth/presentation/widgets/username_input_section.dart';
 
-class ProfileEditScreen extends StatefulWidget {
+class ProfileEditScreen extends StatelessWidget {
   const ProfileEditScreen({super.key});
 
   @override
-  State<ProfileEditScreen> createState() => _ProfileEditScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ProfileEditViewModel(context.read()),
+      child: const _ProfileEditScreenContent(),
+    );
+  }
 }
 
-class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  File? _profileImage;
-  final TextEditingController _usernameController = TextEditingController();
-  bool _isUsernameConfirmed = false;
-
-  bool get _isUsernameValid {
-    final username = _usernameController.text.trim();
-    return username.isNotEmpty && username.runes.length <= 10;
-  }
-
-  void _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-
-    if (picked != null) {
-      setState(() => _profileImage = File(picked.path));
-    }
-  }
-
-  void _confirmUsername() {
-    final username = _usernameController.text.trim();
-    if (username.isEmpty || username.runes.length > 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('사용자 이름은 1~10자 이내로 입력해주세요.')),
-      );
-    } else {
-      setState(() => _isUsernameConfirmed = true);
-    }
-  }
-
-  void _saveProfile() {
-    if (!_isUsernameConfirmed) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('사용자 이름을 먼저 설정해주세요.')));
-      return;
-    }
-
-    // TODO: 저장 로직 연동
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('프로필이 저장되었습니다.')));
-  }
+class _ProfileEditScreenContent extends StatelessWidget {
+  const _ProfileEditScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<ProfileEditViewModel>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('프로필 관리'),
@@ -69,7 +38,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           children: [
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: _pickImage,
+              onTap: () async {
+                final picker = ImagePicker();
+                final picked = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
+                if (picked != null) {
+                  viewModel.setProfileImage(File(picked.path));
+                }
+              },
               child: Stack(
                 alignment: Alignment.bottomRight,
                 children: [
@@ -77,11 +54,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     radius: 60,
                     backgroundColor: Colors.white,
                     backgroundImage:
-                        _profileImage != null
-                            ? FileImage(_profileImage!)
+                        viewModel.profileImage != null
+                            ? FileImage(viewModel.profileImage!)
                             : null,
                     child:
-                        _profileImage == null
+                        viewModel.profileImage == null
                             ? const Icon(
                               Icons.person,
                               size: 60,
@@ -106,17 +83,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             ),
             const SizedBox(height: 32),
             UsernameInputSection(
-              controller: _usernameController,
-              isConfirmed: _isUsernameConfirmed,
-              onConfirm: _confirmUsername,
-              onError:
-                  (msg) => ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(msg))),
-              onSuccess:
-                  (msg) => ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(msg))),
+              controller: viewModel.usernameController,
+              isConfirmed: viewModel.isUsernameConfirmed,
+              onConfirm: viewModel.confirmUsername,
+              onError: (msg) => _showSnackbar(context, msg),
+              onSuccess: (msg) => _showSnackbar(context, msg),
             ),
           ],
         ),
@@ -125,7 +96,19 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: ElevatedButton(
-            onPressed: _saveProfile,
+            onPressed:
+                viewModel.canSubmit
+                    ? () async {
+                      final success = await viewModel.submitProfile();
+                      if (success && context.mounted) {
+                        _showSnackbar(context, '✅ 저장 완료');
+                        Navigator.pop(context);
+                      } else if (viewModel.errorMessage != null &&
+                          context.mounted) {
+                        _showSnackbar(context, viewModel.errorMessage!);
+                      }
+                    }
+                    : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2962FF),
               foregroundColor: Colors.white,
@@ -134,13 +117,32 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              '저장하기',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            child:
+                viewModel.isLoading
+                    ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                    : const Text(
+                      '저장하기',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
           ),
         ),
       ),
     );
+  }
+
+  void _showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

@@ -1,4 +1,3 @@
-// lib/features/phishing/presentation/screen/phishing_main_screen.dart
 import 'package:flutter/material.dart';
 import 'phishing_sub_router_screen.dart';
 
@@ -10,7 +9,7 @@ class PhishingMainScreen extends StatefulWidget {
 }
 
 class _PhishingMainScreenState extends State<PhishingMainScreen> {
-  String? selectedSub;
+  String? selectedSub; // ✅ null이면 메뉴 화면, 값이 있으면 해당 서브화면
 
   final List<Map<String, dynamic>> menuItems = [
     {
@@ -26,7 +25,7 @@ class _PhishingMainScreenState extends State<PhishingMainScreen> {
       'sub': 'simulation',
     },
     {
-      'icon': Icons.shield_outlined,
+      'icon': Icons.description,
       'title': '피해 대처 가이드',
       'subtitle': '신고 방법과 대처법을 안내해드려요',
       'sub': 'guide',
@@ -35,17 +34,22 @@ class _PhishingMainScreenState extends State<PhishingMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ 메뉴 항목 선택되면 서브 화면 보여주기
     if (selectedSub != null) {
       return PhishingSubRouterScreen(
         sub: selectedSub!,
-        onBack: () => setState(() => selectedSub = null),
+        onBack: () => setState(() => selectedSub = null), // 뒤로가기 → 메뉴로
       );
     }
 
+    // ✅ 초기 메뉴 선택 화면
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('피싱방지 기능을 선택해주세요'),
+        title: const Text(
+          '피싱방지 기능을 선택해주세요',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 1,
         centerTitle: true,
@@ -68,7 +72,7 @@ class _PhishingMainScreenState extends State<PhishingMainScreen> {
 
   Widget _buildMenuCard(Map<String, dynamic> item) {
     return InkWell(
-      onTap: () => setState(() => selectedSub = item['sub']),
+      onTap: () => setState(() => selectedSub = item['sub']), // ✅ 화면 전환
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

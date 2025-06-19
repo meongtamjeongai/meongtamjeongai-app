@@ -1,67 +1,72 @@
 import 'package:flutter/material.dart';
 
 class DetectedRisksCard extends StatelessWidget {
-  const DetectedRisksCard({super.key});
+  final String reason;
+
+  const DetectedRisksCard({super.key, required this.reason});
 
   @override
   Widget build(BuildContext context) {
-    final List<String> risks = ['짧은 링크 URL 사용', '사칭된 기관명 포함', '과도한 긴급성 표현'];
+    final List<String> risks =
+        reason
+            .split(RegExp(r'[,\n]'))
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // 제목 왼쪽 정렬
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           '발견된 위험 요소',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF212529),
           ),
         ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children:
-              risks.map((risk) {
-                return SizedBox(
-                  width: (MediaQuery.of(context).size.width - 40 - 12) / 2,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FA),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Color(0xFFDEE2E6)),
+          ),
+          child:
+              risks.isEmpty
+                  ? const Text(
+                    '위험 요소가 발견되지 않았어요.',
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: Color(0xFF212529),
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(
-                        255,
-                        240,
-                        242,
-                        244,
-                      ), // 밝고 세련된 연그레이
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDEE2E6)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(
-                            0.02,
-                          ), // 그림자 색 (살짝 어두운 회색)
-                          blurRadius: 3, // 흐림 정도
-                          offset: const Offset(0, 3), // 위치 (x, y)
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      risk,
-                      textAlign: TextAlign.center, // ✅ 박스 안 텍스트는 가운데 정렬
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF212529),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                  )
+                  : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:
+                        risks
+                            .map(
+                              (e) => Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: 15,
+                                ), // 간격 줄임
+                                child: Text(
+                                  '• $e',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    color: Color(0xFF212529),
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.8,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
-                );
-              }).toList(),
         ),
       ],
     );

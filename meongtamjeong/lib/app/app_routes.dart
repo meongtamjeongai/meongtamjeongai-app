@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
+import 'package:meongtamjeong/domain/models/phishing_analysis_result.dart';
 import 'package:meongtamjeong/features/auth/presentation/screens/login_screen.dart';
 import 'package:meongtamjeong/features/auth/presentation/screens/profile_setup_screen.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/screens/character_detail_screen.dart';
@@ -14,8 +15,9 @@ import 'package:meongtamjeong/features/mypage/presentation/screens/notice_screen
 import 'package:meongtamjeong/features/mypage/presentation/screens/privacy_policy_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/profile_edit_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/terms_webview_screen.dart';
-import 'package:meongtamjeong/features/phishing/presentation/screen/detection_main_screen.dart';
 import 'package:meongtamjeong/features/phishing/presentation/screen/detection_result_detail_screen.dart';
+import 'package:meongtamjeong/features/phishing/presentation/screen/phishing_handling_guide_main_screen.dart';
+import 'package:meongtamjeong/features/phishing/presentation/screen/phishing_main_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
 import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
 
@@ -87,13 +89,21 @@ final router = GoRouter(
     GoRoute(
       path: '/phishing-detection',
       name: 'phishing-detection',
-      builder: (context, state) => const DetectionMainScreen(),
+      builder: (context, state) => const PhishingMainScreen(),
     ),
 
     GoRoute(
       path: '/result',
       name: 'phishing-result',
-      builder: (context, state) => const ResultDetailScreen(),
+      builder: (context, state) {
+        final result = state.extra as PhishingAnalysisResult; // ✅ 바로 타입 캐스팅
+        return ResultDetailScreen(result: result);
+      },
+    ),
+    GoRoute(
+      path: '/handling-guide',
+      name: 'handling-guide',
+      builder: (context, state) => const PhishingHandlingGuideScreen(),
     ),
 
     GoRoute(

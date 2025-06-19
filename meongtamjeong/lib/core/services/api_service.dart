@@ -6,6 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:meongtamjeong/core/utils/image_utils.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
 import 'package:meongtamjeong/domain/models/message_model.dart';
 import 'package:meongtamjeong/domain/models/persona_model.dart';
@@ -13,6 +14,7 @@ import 'package:meongtamjeong/domain/models/persona_update_model.dart';
 import 'package:meongtamjeong/domain/models/token_model.dart';
 import 'package:meongtamjeong/domain/models/user_model.dart';
 import 'package:meongtamjeong/domain/models/user_update_model.dart';
+import 'package:meongtamjeong/domain/models/phishing_analysis_result.dart'; // 꼭 import
 
 class ApiService {
   late final Dio _dio;
@@ -453,6 +455,25 @@ class ApiService {
       rethrow;
     }
     return false;
+  }
+
+  Future<PhishingAnalysisResult?> analyzePhishingImage(File imageFile) async {
+    try {
+      final base64String = await ImageUtils.resizeAndConvertToBase64(imageFile);
+
+      final response = await _dio.post(
+        '/phishing/analyze-image',
+        data: {'image_base64': base64String},
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        return PhishingAnalysisResult.fromJson(response.data);
+      }
+    } catch (e) {
+      print('ApiService.analyzePhishingImage 에러: $e');
+      rethrow;
+    }
+    return null;
   }
 
   Dio get dio => _dio;

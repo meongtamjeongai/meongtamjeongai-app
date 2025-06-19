@@ -24,7 +24,7 @@ class MainFeaturesGrid extends StatelessWidget {
         'sub': 'simulation',
       },
       {
-        'icon': Icons.shield_outlined,
+        'icon': Icons.description,
         'label': '피해 대처 가이드',
         'index': 1,
         'sub': 'guide',

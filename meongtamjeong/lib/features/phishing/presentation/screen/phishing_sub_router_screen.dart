@@ -1,4 +1,3 @@
-// lib/features/phishing/presentation/screen/phishing_sub_router_screen.dart
 import 'package:flutter/material.dart';
 import 'detection_main_screen.dart';
 import 'simulation_main_screen.dart';
@@ -16,30 +15,14 @@ class PhishingSubRouterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget screen;
     switch (sub) {
       case 'simulation':
-        screen = const PhishingSimulationScreen();
-        break;
+        return SimulationMainScreen(onBack: onBack);
       case 'guide':
-        screen = const PhishingHandlingGuideScreen();
-        break;
+        return PhishingHandlingGuideScreen(onBack: onBack);
       case 'investigation':
       default:
-        screen = const DetectionMainScreen();
+        return DetectionMainScreen(onBack: onBack);
     }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("피싱 기능"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: onBack,
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
-      body: screen,
-    );
   }
 }

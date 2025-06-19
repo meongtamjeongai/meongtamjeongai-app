@@ -31,6 +31,7 @@ class HandlingStepCard extends StatelessWidget {
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16, // 👈 강조
                 ),
               ),
             ),
@@ -46,8 +47,14 @@ class HandlingStepCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(description, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 8),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      height: 1.6, // 👈 줄 간격 추가
+                    ),
+                  ),
                 ],
               ),
             ),

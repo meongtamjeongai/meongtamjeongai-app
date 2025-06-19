@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/emergency_contact_card.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_handling_guide/handling_emergency_contact_card.dart';
 import 'package:meongtamjeong/features/phishing/presentation/widgets_handling_guide/handling_step_card.dart';
 
 class PhishingHandlingGuideScreen extends StatelessWidget {
-  const PhishingHandlingGuideScreen({super.key});
+  final VoidCallback? onBack;
+
+  const PhishingHandlingGuideScreen({super.key, this.onBack});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('피해 대처 가이드'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('피해 대처 가이드'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go('/main', extra: {'index': 1, 'sub': null});
+          },
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [
@@ -28,7 +44,7 @@ class PhishingHandlingGuideScreen extends StatelessWidget {
             description: '사이버 수사대나 금융기관에 신고하세요.',
           ),
           SizedBox(height: 16),
-          EmergencyContactCard(),
+          HandlingEmergencyContactCard(),
         ],
       ),
     );

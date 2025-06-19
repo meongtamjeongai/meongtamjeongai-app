@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/detected_risks_card.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/handling_steps_card.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/emergency_contact_card.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/result_visualization.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/risk_level_indicator.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/detected_risks_card.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/handling_steps_card.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/emergency_contact_card.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/result_visualization.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/risk_level_indicator.dart';
 
 class ResultDetailScreen extends StatelessWidget {
   const ResultDetailScreen({super.key});

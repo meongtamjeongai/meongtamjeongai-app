@@ -1,52 +1,54 @@
+// lib/features/phishing/presentation/screen/phishing_main_screen.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'phishing_sub_router_screen.dart';
 
-class PhishingScreen extends StatefulWidget {
-  const PhishingScreen({super.key});
+class PhishingMainScreen extends StatefulWidget {
+  const PhishingMainScreen({super.key});
 
   @override
-  State<PhishingScreen> createState() => _PhishingScreenState();
+  State<PhishingMainScreen> createState() => _PhishingMainScreenState();
 }
 
-class _PhishingScreenState extends State<PhishingScreen> {
+class _PhishingMainScreenState extends State<PhishingMainScreen> {
+  String? selectedSub;
+
   final List<Map<String, dynamic>> menuItems = [
     {
       'icon': Icons.report_problem_outlined,
       'title': '피싱 의심 조사',
       'subtitle': '의심되는 메시지를 분석해드려요',
-      'route': '/phishing-detection',
+      'sub': 'investigation',
     },
     {
       'icon': Icons.smart_toy_outlined,
       'title': '피싱 시뮬레이션',
       'subtitle': '상황별 피싱 체험으로 예방해요',
-      'route': '/simulation',
+      'sub': 'simulation',
     },
     {
-      'icon': Icons.translate,
-      'title': '의심 문자 번역',
-      'subtitle': '낯선 언어를 번역해드릴게요',
-      'route': '/translation',
+      'icon': Icons.shield_outlined,
+      'title': '피해 대처 가이드',
+      'subtitle': '신고 방법과 대처법을 안내해드려요',
+      'sub': 'guide',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
+    if (selectedSub != null) {
+      return PhishingSubRouterScreen(
+        sub: selectedSub!,
+        onBack: () => setState(() => selectedSub = null),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        title: const Text('피싱방지 기능을 선택해주세요'),
         backgroundColor: Colors.white,
         elevation: 1,
-        // centerTitle: true,
-        title: const Text(
-          '피싱방지 기능을 선택해주세요',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        automaticallyImplyLeading: false,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -57,7 +59,7 @@ class _PhishingScreenState extends State<PhishingScreen> {
               height: 230,
             ),
             const SizedBox(height: 24),
-            ...menuItems.map((item) => _buildMenuCard(item)),
+            ...menuItems.map(_buildMenuCard),
           ],
         ),
       ),
@@ -66,9 +68,7 @@ class _PhishingScreenState extends State<PhishingScreen> {
 
   Widget _buildMenuCard(Map<String, dynamic> item) {
     return InkWell(
-      onTap: () {
-        context.push(item['route']);
-      },
+      onTap: () => setState(() => selectedSub = item['sub']),
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

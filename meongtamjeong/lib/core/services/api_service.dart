@@ -19,12 +19,11 @@ class ApiService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> saveUserProfile({
-    required String uid,
     required String username,
     File? profileImageFile,
   }) async {
     try {
-      final form = FormData.fromMap({
+      final formData = FormData.fromMap({
         'username': username,
         if (profileImageFile != null)
           'profile_image': await MultipartFile.fromFile(
@@ -33,18 +32,13 @@ class ApiService {
             contentType: MediaType('image', 'jpeg'),
           ),
       });
-      print('📤 username: $username');
-      if (profileImageFile != null) {
-        print('📤 image path: ${profileImageFile.path}');
-      }
 
-      final response = await _dio.put(
-        '/users/me',
-        data: form,
-        options: Options(), // contentType 생략!
+      final response = await _dio.post(
+        '/users/me/profile', // ✅ 새로운 API 경로
+        data: formData,
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         print('✅ 사용자 프로필 업로드 성공');
       } else {
         throw Exception('❌ 프로필 저장 실패: ${response.statusCode}');

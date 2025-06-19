@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/image_picker_widget.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/widgets/safety_guide_card.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/image_picker_widget.dart';
+import 'package:meongtamjeong/features/phishing/presentation/widgets_detection/safety_guide_card.dart';
 import 'package:meongtamjeong/navigation/widgets/custom_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:meongtamjeong/features/character_selection/logic/providers/character_provider.dart';
@@ -115,21 +115,6 @@ class _DetectionMainScreenState extends State<DetectionMainScreen> {
             const SafetyGuideCard(),
           ],
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: 1,
-        onTap: (index) {
-          if (currentCharacter == null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('캐릭터가 선택되지 않았습니다.')));
-            return;
-          }
-          context.goNamed(
-            'main',
-            extra: {'persona': currentCharacter, 'index': index},
-          );
-        },
       ),
     );
   }

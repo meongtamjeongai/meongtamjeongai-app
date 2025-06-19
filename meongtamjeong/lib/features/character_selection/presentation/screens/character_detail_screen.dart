@@ -1,14 +1,17 @@
+// character_detail_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meongtamjeong/domain/models/persona_model.dart';
-import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_info_dialog.dart';
-import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
 import 'package:meongtamjeong/app/service_locator.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/chat/logic/models/chat_message_model.dart';
+import 'package:meongtamjeong/features/chat/logic/providers/conversation_provider.dart';
+import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_info_dialog.dart';
+import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
+import 'package:provider/provider.dart';
 
 class CharacterDetailScreen extends StatefulWidget {
   final PersonaModel character;
@@ -36,7 +39,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
         'assets/persona_messages.json',
       );
       final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-
       final List<dynamic> messages = jsonMap[widget.character.name] ?? [];
       setState(() {
         _messages = messages.cast<Map<String, dynamic>>();
@@ -57,61 +59,50 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
   Future<void> _startChat() async {
     if (_isCreatingConversation) return;
 
-    setState(() {
-      _isCreatingConversation = true;
-    });
+    setState(() => _isCreatingConversation = true);
 
     try {
-      final ConversationModel? conversation = await _apiService
-          .startNewConversation(personaId: widget.character.id);
+      final conversation = await _apiService.startNewConversation(
+        personaId: widget.character.id,
+      );
 
       if (conversation != null && mounted) {
-        // ✅ presigned URL 수동 처리
-        if ((conversation.persona.profileImageUrl == null ||
-                conversation.persona.profileImageUrl!.isEmpty) &&
+        // ✅ presigned URL 처리
+        if ((conversation.persona.profileImageUrl?.isEmpty ?? true) &&
             conversation.persona.profileImageKey != null) {
           try {
             final url = await _apiService.getPresignedImageUrl(
               conversation.persona.profileImageKey!,
             );
-            final updatedPersona = conversation.persona.copyWith(
-              profileImageUrl: url,
+            final updated = conversation.copyWith(
+              persona: conversation.persona.copyWith(profileImageUrl: url),
             );
-            final updatedConversation = conversation.copyWith(
-              persona: updatedPersona,
-            );
-
-            context.pushReplacement(
-              '/main',
-              extra: {'conversation': updatedConversation, 'index': 2},
-            );
+            context.read<ConversationProvider>().setConversation(
+              updated,
+            ); // Provider에 저장
+            context.pushReplacement('/main', extra: {'index': 2});
             return;
           } catch (e) {
-            print('⚠️ presigned URL 요청 실패: $e');
+            print('⚠️ presigned URL 실패: $e');
           }
         }
 
-        // presigned URL 불필요하거나 실패 시 그대로 전송
-        context.pushReplacement(
-          '/main',
-          extra: {'conversation': conversation, 'index': 2},
-        );
+        context.read<ConversationProvider>().setConversation(
+          conversation,
+        ); // Provider에 저장
+        context.pushReplacement('/main', extra: {'index': 2});
       } else {
-        throw Exception('대화방 생성에 실패했습니다.');
+        throw Exception('대화방 생성 실패');
       }
     } catch (e) {
-      print('❌ 대화방 생성 오류: $e');
+      print('❌ 오류: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('대화방을 시작할 수 없습니다: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('대화 시작 실패: ${e.toString()}')));
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isCreatingConversation = false;
-        });
-      }
+      if (mounted) setState(() => _isCreatingConversation = false);
     }
   }
 
@@ -124,7 +115,6 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFE6F4F9),
         elevation: 0,
-        automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
           onPressed: _navigateBack,
@@ -150,9 +140,9 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
                   messageModel: ChatMessageModel(
                     from: isPersona ? 'ai' : 'user',
                     text: msg['message'],
-                    image: null, // 여기선 텍스트 메시지만
+                    image: null,
                     file: null,
-                    time: DateTime.now(), // 임시
+                    time: DateTime.now(),
                   ),
                   isFromCharacter: isPersona,
                 );
@@ -168,13 +158,12 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
                 onPressed: _isCreatingConversation ? null : _startChat,
                 icon:
                     _isCreatingConversation
-                        ? Container(
+                        ? const SizedBox(
                           width: 24,
                           height: 24,
-                          padding: const EdgeInsets.all(2.0),
-                          child: const CircularProgressIndicator(
-                            color: Colors.white,
+                          child: CircularProgressIndicator(
                             strokeWidth: 3,
+                            color: Colors.white,
                           ),
                         )
                         : const Icon(Icons.chat_bubble_outline),

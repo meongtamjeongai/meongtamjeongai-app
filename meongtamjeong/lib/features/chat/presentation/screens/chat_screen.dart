@@ -1,75 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+
 import 'package:meongtamjeong/app/service_locator.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
-import 'package:meongtamjeong/domain/models/conversation_model.dart';
-import 'package:meongtamjeong/domain/models/persona_model.dart';
 import 'package:meongtamjeong/features/chat/logic/providers/chat_provider.dart';
 import 'package:meongtamjeong/features/chat/presentation/widgets/attachment_button.dart';
 import 'package:meongtamjeong/features/chat/presentation/widgets/preview_attachment_list.dart';
 import 'package:meongtamjeong/features/character_selection/presentation/widgets/character_message_bubble.dart';
+import 'package:meongtamjeong/features/chat/logic/providers/conversation_provider.dart';
+import 'package:meongtamjeong/domain/models/persona_model.dart';
+import 'package:meongtamjeong/domain/models/conversation_model.dart';
 
 class ChatScreen extends StatelessWidget {
-  final ConversationModel conversation;
-
-  const ChatScreen({super.key, required this.conversation});
+  const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final conversation = context.watch<ConversationProvider>().current;
+
+    if (conversation == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text(
+            '💬 대화 상대를 선택해 주세요!',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
     return ChangeNotifierProvider(
       create:
           (_) => ChatProvider(
             conversation: conversation,
             apiService: locator<ApiService>(),
           ),
-      child: ChatScreenContent(conversation: conversation),
+      child: _ChatScreenContent(),
     );
   }
 }
 
-class ChatScreenContent extends StatefulWidget {
-  final ConversationModel conversation;
-
-  const ChatScreenContent({super.key, required this.conversation});
-
+class _ChatScreenContent extends StatefulWidget {
   @override
-  State<ChatScreenContent> createState() => _ChatScreenContentState();
+  State<_ChatScreenContent> createState() => _ChatScreenContentState();
 }
 
-class _ChatScreenContentState extends State<ChatScreenContent> {
+class _ChatScreenContentState extends State<_ChatScreenContent> {
   final TextEditingController _controller = TextEditingController();
   PersonaModel? _updatedPersona;
   bool _isFetchingImage = false;
 
+  late final ConversationModel conversation;
+
   @override
   void initState() {
     super.initState();
+    conversation = context.read<ConversationProvider>().current!;
     _fetchProfileImageUrlIfNeeded();
   }
 
   void _fetchProfileImageUrlIfNeeded() async {
-    final persona = widget.conversation.persona;
+    final persona = conversation.persona;
 
     if ((persona.profileImageUrl == null || persona.profileImageUrl!.isEmpty) &&
         persona.profileImageKey != null) {
-      setState(() {
-        _isFetchingImage = true;
-      });
-
+      setState(() => _isFetchingImage = true);
       try {
         final url = await locator<ApiService>().getPresignedImageUrl(
           persona.profileImageKey!,
         );
         setState(() {
           _updatedPersona = persona.copyWith(profileImageUrl: url);
-          _isFetchingImage = false;
         });
       } catch (e) {
         debugPrint('❌ 프로필 이미지 불러오기 실패: $e');
-        setState(() {
-          _isFetchingImage = false;
-        });
+      } finally {
+        setState(() => _isFetchingImage = false);
       }
     }
   }
@@ -83,7 +90,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(_updatedPersona ?? widget.conversation.persona),
+            _buildHeader(_updatedPersona ?? conversation.persona),
             Expanded(
               child:
                   provider.isLoading
@@ -128,8 +135,7 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                                 ),
                               CharacterMessageBubble(
                                 character:
-                                    _updatedPersona ??
-                                    widget.conversation.persona,
+                                    _updatedPersona ?? conversation.persona,
                                 messageModel: msg,
                                 isFromCharacter: msg.isFromBot,
                               ),
@@ -254,12 +260,10 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
     _controller.clear();
     FocusScope.of(context).unfocus();
 
-    // 텍스트가 있으면 먼저 전송
     if (textToSend.isNotEmpty) {
       await provider.sendMessage(textToSend);
     }
 
-    // 이미지가 있으면 전송
     if (provider.pendingImages.isNotEmpty) {
       await provider.sendImageMessages();
     }

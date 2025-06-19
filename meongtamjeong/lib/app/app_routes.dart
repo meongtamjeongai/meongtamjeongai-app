@@ -14,11 +14,10 @@ import 'package:meongtamjeong/features/mypage/presentation/screens/notice_screen
 import 'package:meongtamjeong/features/mypage/presentation/screens/privacy_policy_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/profile_edit_screen.dart';
 import 'package:meongtamjeong/features/mypage/presentation/screens/terms_webview_screen.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/screens/detection_main_screen.dart';
-import 'package:meongtamjeong/features/phishing_detection/presentation/screens/result_detail_screen.dart';
+import 'package:meongtamjeong/features/phishing/presentation/screen/detection_main_screen.dart';
+import 'package:meongtamjeong/features/phishing/presentation/screen/detection_result_detail_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
 import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
-import 'package:meongtamjeong/domain/models/conversation_model.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -78,17 +77,10 @@ final router = GoRouter(
         }
 
         final data = extra as Map<String, dynamic>;
-        final conversation = data['conversation'];
         final index = data['index'] as int? ?? 2;
+        final sub = data['sub'] as String?;
 
-        if (conversation is! ConversationModel) {
-          return const Scaffold(body: Center(child: Text('잘못된 대화방 데이터입니다.')));
-        }
-
-        return MainNavigationScreen(
-          conversation: conversation,
-          initialIndex: index,
-        );
+        return MainNavigationScreen(initialIndex: index, sub: sub);
       },
     ),
 

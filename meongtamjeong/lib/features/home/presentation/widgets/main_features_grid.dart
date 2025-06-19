@@ -11,9 +11,24 @@ class MainFeaturesGrid extends StatelessWidget {
     final currentCharacter =
         context.watch<CharacterProvider>().selectedCharacter;
     final List<Map<String, dynamic>> features = [
-      {'icon': Icons.report_problem_outlined, 'label': '피싱 의심 조사', 'index': 1},
-      {'icon': Icons.smart_toy_outlined, 'label': '피싱 시뮬레이션', 'index': 1},
-      {'icon': Icons.translate_outlined, 'label': '의심 문자 번역', 'index': 1},
+      {
+        'icon': Icons.report_problem_outlined,
+        'label': '피싱 의심 조사',
+        'index': 1,
+        'sub': 'investigation',
+      },
+      {
+        'icon': Icons.smart_toy_outlined,
+        'label': '피싱 시뮬레이션',
+        'index': 1,
+        'sub': 'simulation',
+      },
+      {
+        'icon': Icons.shield_outlined,
+        'label': '피해 대처 가이드',
+        'index': 1,
+        'sub': 'guide',
+      },
       {'icon': Icons.chat_outlined, 'label': '대화하기', 'index': 2},
       {'icon': Icons.history_outlined, 'label': '지난 대화보기', 'index': 3},
       {'icon': Icons.person_outline, 'label': '내 정보', 'index': 4},
@@ -34,20 +49,10 @@ class MainFeaturesGrid extends StatelessWidget {
           final feature = features[index];
           return InkWell(
             onTap: () {
-              if (currentCharacter != null) {
-                context.goNamed(
-                  'main',
-                  extra: {
-                    'persona': currentCharacter,
-                    'index': feature['index'],
-                  },
-                );
-              } else {
-                // 예외 처리 (예: 로그인 또는 캐릭터 선택이 먼저 되어야 함)
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('캐릭터를 먼저 선택해주세요')));
-              }
+              final index = feature['index'] as int;
+              final sub = feature['sub'] as String?;
+
+              context.goNamed('main', extra: {'index': index, 'sub': sub});
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,

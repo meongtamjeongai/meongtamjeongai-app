@@ -77,17 +77,9 @@ class UserProfileSetupViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        _errorMessage = '로그인된 사용자가 없습니다.';
-        return false;
-      }
-
-      final uid = user.uid;
       final username = _usernameController.text.trim();
 
       await _apiService.saveUserProfile(
-        uid: uid,
         username: username,
         profileImageFile: _profileImage,
       );

@@ -36,6 +36,7 @@ class MessageModel {
   final SenderType senderType;
   final String content;
   final int? geminiTokenUsage;
+  final String? imageKey;
   final DateTime createdAt;
 
   MessageModel({
@@ -44,6 +45,7 @@ class MessageModel {
     required this.senderType,
     required this.content,
     this.geminiTokenUsage,
+    this.imageKey,
     required this.createdAt,
   });
 
@@ -54,6 +56,7 @@ class MessageModel {
       senderType: SenderType.fromJson(json['sender_type'] as String),
       content: json['content'] as String,
       geminiTokenUsage: json['gemini_token_usage'] as int?,
+      imageKey: json['image_key'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
@@ -65,6 +68,7 @@ class MessageModel {
       'sender_type': senderType.toJson(),
       'content': content,
       'gemini_token_usage': geminiTokenUsage,
+      'image_key': imageKey,
       'created_at': createdAt.toIso8601String(),
     };
   }

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/core/utils/image_utils.dart';
 import 'package:meongtamjeong/domain/models/conversation_model.dart';
 import 'package:meongtamjeong/domain/models/message_model.dart'
     as domain_message;
@@ -94,8 +96,8 @@ class ChatProvider with ChangeNotifier {
 
     try {
       final chatResponse = await _apiService.sendNewMessage(
-        conversationId,
-        content,
+        conversationId: conversationId,
+        content: content, // ✅ 여기에만 텍스트
       );
 
       if (chatResponse != null) {
@@ -190,27 +192,68 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> sendImageMessages() async {
-    if (pendingImages.isEmpty) return;
+    if (pendingImages.isEmpty || _isSendingMessage) return;
 
     _isSendingMessage = true;
     notifyListeners();
 
-    for (final imageFile in pendingImages) {
-      messages.add(
-        ChatMessageModel(
-          from: 'user',
-          text: '',
-          image: imageFile,
-          file: null,
-          time: DateTime.now().toLocal(),
-        ),
+    for (final imageFile in List<File>.from(pendingImages)) {
+      final now = DateTime.now().toLocal();
+
+      // 1. Optimistic UI
+      final optimisticMsg = ChatMessageModel(
+        from: 'user',
+        text: '',
+        image: imageFile,
+        time: now,
       );
+      messages.add(optimisticMsg);
+      notifyListeners();
+      scrollToBottom();
+
+      try {
+        // 2. base64 인코딩
+        final base64 = await ImageUtils.resizeAndConvertToBase64(imageFile);
+
+        // 3. API 전송
+        final resp = await _apiService.sendNewMessage(
+          conversationId: conversationId,
+          content: '이미지 첨부', // 텍스트 공백방지
+          base64Image: base64,
+        );
+
+        if (resp != null) {
+          // 4. 실제 userMessage로 대체
+          final msg = resp.userMessage;
+          final idx = messages.indexOf(optimisticMsg);
+          if (idx != -1) {
+            messages[idx] = ChatMessageModel(
+              from: msg.senderType.name,
+              text: msg.content,
+              imageKey: msg.imageKey,
+              time: msg.createdAt.toLocal(),
+            );
+          }
+
+          // 5. timestamp 갱신
+          _conversation = _conversation.copyWith(
+            lastMessageAt: msg.createdAt.toLocal(),
+          );
+        } else {
+          throw Exception("이미지 메시지 응답 없음");
+        }
+      } catch (e) {
+        print('❌ 이미지 메시지 전송 실패: $e');
+        messages.remove(optimisticMsg);
+      }
+
+      notifyListeners();
+      scrollToBottom();
     }
 
     pendingImages.clear();
     _isSendingMessage = false;
     notifyListeners();
-    scrollToBottom();
   }
 
   void scrollToBottom() {

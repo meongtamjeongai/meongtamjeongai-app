@@ -39,6 +39,7 @@ dependencies:
 
   # HTTP & API
   # dio: ^5.4.0
+  path: ^1.8.2
   retrofit: ^4.0.3
 
   # 로컬 저장소

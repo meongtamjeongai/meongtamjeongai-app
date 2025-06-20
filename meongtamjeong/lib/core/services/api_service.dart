@@ -342,15 +342,42 @@ class ApiService {
     return [];
   }
 
-  Future<ChatMessageResponse?> sendNewMessage(
-    int conversationId,
-    String content,
-  ) async {
+  // Future<ChatMessageResponse?> sendNewMessage(
+  //   int conversationId,
+  //   String content,
+  // ) async {
+  //   try {
+  //     final response = await _dio.post(
+  //       '/conversations/$conversationId/messages/',
+  //       data: {'content': content},
+  //     );
+  //     if (response.statusCode == 201 && response.data != null) {
+  //       return ChatMessageResponse.fromJson(
+  //         response.data as Map<String, dynamic>,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("ApiService: sendNewMessage Error: $e");
+  //     rethrow;
+  //   }
+  //   return null;
+  // }
+  Future<ChatMessageResponse?> sendNewMessage({
+    required int conversationId,
+    required String content,
+    String? base64Image, // 👈 이미지 추가 (nullable)
+  }) async {
     try {
+      final Map<String, dynamic> requestData = {'content': content};
+      if (base64Image != null && base64Image.isNotEmpty) {
+        requestData['image_base64'] = base64Image;
+      }
+
       final response = await _dio.post(
         '/conversations/$conversationId/messages/',
-        data: {'content': content},
+        data: requestData,
       );
+
       if (response.statusCode == 201 && response.data != null) {
         return ChatMessageResponse.fromJson(
           response.data as Map<String, dynamic>,

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="kakao_app_key">5cb7c5e3a302a4fc063c4fd1432b0c93</string>
+    <string name="client_id">kCDCI_Q8XXVxxTwSCvKk</string>
+    <string name="client_secret">DxjKKQe1vN</string>
+    <string name="client_name">멍탐정</string>
+
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- Show a splash screen on the activity. Automatically removed when

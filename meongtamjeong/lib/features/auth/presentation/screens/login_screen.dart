@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meongtamjeong/features/auth/presentation/widgets/google_login_button.dart';
 import 'package:meongtamjeong/features/auth/presentation/widgets/kakao_login_button.dart';
 import 'package:meongtamjeong/features/auth/presentation/widgets/naver_login_button.dart';
@@ -15,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
 
   void _startLogin() {
-    if (!isLoading) {
+    if (!isLoading && mounted) {
       setState(() {
         isLoading = true;
       });
@@ -23,9 +24,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _resetLoading() {
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _onLoginSuccess() {
+    context.go('/username-setup');
   }
 
   @override
@@ -43,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 180,
               ),
               const SizedBox(height: 25),
-
               const Text(
                 '멍탐정과 함께\n피싱을 예방하세요!',
                 textAlign: TextAlign.center,
@@ -54,21 +60,25 @@ class _LoginScreenState extends State<LoginScreen> {
               KakaoLoginButton(
                 isEnabled: !isLoading,
                 onStartLogin: _startLogin,
+                onFinishLogin: _resetLoading,
+                onLoginSuccess: _onLoginSuccess,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
 
               NaverLoginButton(
                 isEnabled: !isLoading,
                 onStartLogin: _startLogin,
+                onFinishLogin: _resetLoading,
+                onLoginSuccess: _onLoginSuccess,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
 
               GoogleLoginButton(
                 isEnabled: !isLoading,
                 onStartLogin: _startLogin,
                 onFinishLogin: _resetLoading,
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 10),
 
               GuestBrowseButton(),
             ],

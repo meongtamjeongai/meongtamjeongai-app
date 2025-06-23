@@ -1,18 +1,17 @@
 // meongtamdjeong_flutter/lib/models/persona_model.dart
-// 백엔드로부터 받는 페르소나 정보를 담는 모델 (PersonaResponse 대응)
 
 class PersonaModel {
   final int id;
   final String name;
   final String? description;
   String? profileImageUrl;
-  final String? profileImageKey; // Pydantic의 HttpUrl은 Dart에서 String으로 받음
+  final String? profileImageKey;
   final String systemPrompt;
+  final String? startingMessage; // ✅ 추가됨
   final bool isPublic;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int? createdByUserId;
-  // final PersonaCreatorInfoModel? creator; // PersonaCreatorInfo 스키마에 대응하는 모델 (필요시 추가)
 
   PersonaModel({
     required this.id,
@@ -21,11 +20,11 @@ class PersonaModel {
     this.profileImageUrl,
     this.profileImageKey,
     required this.systemPrompt,
+    this.startingMessage, // ✅ 추가됨
     required this.isPublic,
     required this.createdAt,
     required this.updatedAt,
     this.createdByUserId,
-    // this.creator,
   });
 
   PersonaModel copyWith({
@@ -35,6 +34,7 @@ class PersonaModel {
     String? profileImageUrl,
     String? profileImageKey,
     String? systemPrompt,
+    String? startingMessage, // ✅ 추가됨
     bool? isPublic,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -47,6 +47,7 @@ class PersonaModel {
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       profileImageKey: profileImageKey ?? this.profileImageKey,
       systemPrompt: systemPrompt ?? this.systemPrompt,
+      startingMessage: startingMessage ?? this.startingMessage, // ✅ 추가됨
       isPublic: isPublic ?? this.isPublic,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -62,13 +63,11 @@ class PersonaModel {
       profileImageUrl: json['profile_image_url'] as String?,
       profileImageKey: json['profile_image_key'] as String?,
       systemPrompt: json['system_prompt'] as String,
+      startingMessage: json['starting_message'] as String?, // ✅ 파싱 추가됨
       isPublic: json['is_public'] as bool? ?? true,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       createdByUserId: json['created_by_user_id'] as int?,
-      // creator: json['creator'] != null
-      //   ? PersonaCreatorInfoModel.fromJson(json['creator'] as Map<String, dynamic>)
-      //   : null,
     );
   }
 
@@ -80,36 +79,11 @@ class PersonaModel {
       'profile_image_url': profileImageUrl,
       'profile_image_key': profileImageKey,
       'system_prompt': systemPrompt,
+      'starting_message': startingMessage, // ✅ 추가됨
       'is_public': isPublic,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'created_by_user_id': createdByUserId,
-      // 'creator': creator?.toJson(),
     };
   }
 }
-
-// // 필요시 PersonaCreatorInfo 모델 (백엔드 스키마 PersonaCreatorInfo 대응)
-// class PersonaCreatorInfoModel {
-//   final int id;
-//   final String? username;
-//   final String? email;
-
-//   PersonaCreatorInfoModel({required this.id, this.username, this.email});
-
-//   factory PersonaCreatorInfoModel.fromJson(Map<String, dynamic> json) {
-//     return PersonaCreatorInfoModel(
-//       id: json['id'] as int,
-//       username: json['username'] as String?,
-//       email: json['email'] as String?,
-//     );
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': id,
-//       'username': username,
-//       'email': email,
-//     };
-//   }
-// }

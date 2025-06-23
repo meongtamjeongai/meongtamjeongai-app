@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:meongtamjeong/app/app.dart';
 import 'package:meongtamjeong/app/service_locator.dart';
+import 'package:meongtamjeong/core/utils/phishing_label_loader.dart';
 import 'package:meongtamjeong/firebase_options.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'firebase_options.dart';
@@ -15,5 +16,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupLocator();
   await initializeDateFormatting('ko_KR', null);
+  await PhishingLabelLoader.loadLabels();
   runApp(const MeongTamJeong());
 }

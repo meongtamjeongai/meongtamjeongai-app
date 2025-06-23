@@ -21,9 +21,9 @@ class SplashScreen extends StatelessWidget {
             children: [
               // const SizedBox(height: 40),
               const Image(
-                image: AssetImage('assets/images/characters/example_meong.png'),
-                width: 180,
-                height: 180,
+                image: AssetImage('assets/images/characters/poppy_guard.png'),
+                width: 300,
+                height: 300,
               ),
               const SizedBox(height: 40),
               const Text(

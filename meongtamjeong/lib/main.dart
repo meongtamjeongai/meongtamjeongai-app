@@ -10,6 +10,7 @@ import 'firebase_options.dart';
 
 void main() async {
   // 위젯 바인딩 초기화
+
   WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(nativeAppKey: '5cb7c5e3a302a4fc063c4fd1432b0c93');
 

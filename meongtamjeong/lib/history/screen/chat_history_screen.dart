@@ -150,12 +150,12 @@ class _ChatHistoryScreenContentState extends State<_ChatHistoryScreenContent> {
                           vertical: 12,
                         ),
                         leading: CircleAvatar(
-                          backgroundColor: Colors.grey[300],
+                          backgroundColor: Colors.white,
                           backgroundImage:
                               persona.profileImageUrl != null
                                   ? NetworkImage(persona.profileImageUrl!)
                                   : null,
-                          radius: 28,
+                          radius: 30,
                           child:
                               persona.profileImageUrl == null
                                   ? const Icon(Icons.pets, color: Colors.white)

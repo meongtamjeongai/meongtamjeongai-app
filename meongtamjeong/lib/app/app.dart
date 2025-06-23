@@ -20,7 +20,9 @@ class MeongTamJeong extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CharacterProvider()),
-        ChangeNotifierProvider(create: (_) => UserProfileProvider()),
+        ChangeNotifierProvider(
+          create: (_) => UserProfileProvider(locator<ApiService>()),
+        ),
         ChangeNotifierProvider(
           create: (_) => ProfileEditViewModel(locator<ApiService>()),
         ),

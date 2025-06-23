@@ -114,7 +114,7 @@ class PhishingSimulationService {
     required String message,
   }) async {
     final response = await _dio.post(
-      '/conversations/$conversationId/messages',
+      '/conversations/$conversationId/messages/',
       data: {'content': message},
     );
     if (response.statusCode == 200 || response.statusCode == 201) {

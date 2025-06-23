@@ -1,19 +1,36 @@
 // features/profile_edit/presentation/screens/profile_edit_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:meongtamjeong/features/mypage/logic/models/profile_edit_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:meongtamjeong/features/mypage/logic/models/profile_edit_viewmodel.dart';
+import 'package:meongtamjeong/features/mypage/logic/providers/user_profile_provider.dart';
 import 'package:meongtamjeong/features/auth/presentation/widgets/username_input_section.dart';
+import 'package:meongtamjeong/core/services/api_service.dart';
 
+// 수정된 ProfileEditScreen
 class ProfileEditScreen extends StatelessWidget {
   const ProfileEditScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProfileEditViewModel(context.read()),
-      child: const _ProfileEditScreenContent(),
+    return Consumer<UserProfileProvider>(
+      builder: (context, userProfileProvider, _) {
+        final user = userProfileProvider.user;
+
+        return ChangeNotifierProvider<ProfileEditViewModel>(
+          create: (_) {
+            final viewModel = ProfileEditViewModel(context.read<ApiService>());
+            if (user != null) {
+              // 닉네임, 이미지 등 초기값 설정
+              viewModel.initialize(user);
+            }
+            return viewModel;
+          },
+          child: const _ProfileEditScreenContent(),
+        );
+      },
     );
   }
 }
@@ -36,7 +53,6 @@ class _ProfileEditScreenContent extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
@@ -110,6 +126,15 @@ class _ProfileEditScreenContent extends StatelessWidget {
                     ? () async {
                       final success = await viewModel.submitProfile();
                       if (success && context.mounted) {
+                        // ✅ 저장 성공 후 사용자 정보 다시 불러오기
+                        final updatedUser =
+                            await context.read<ApiService>().getCurrentUser();
+                        if (updatedUser != null && context.mounted) {
+                          context.read<UserProfileProvider>().setUser(
+                            updatedUser,
+                          );
+                        }
+
                         _showSnackbar(context, '✅ 저장 완료');
                         Navigator.pop(context);
                       } else if (viewModel.errorMessage != null &&

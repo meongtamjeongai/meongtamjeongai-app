@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meongtamjeong/core/services/api_service.dart';
+import 'package:meongtamjeong/domain/models/user_model.dart';
 
 class ProfileEditViewModel extends ChangeNotifier {
   final ApiService _apiService;
@@ -86,6 +88,36 @@ class ProfileEditViewModel extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> initialize(UserModel user) async {
+    _usernameController.text = user.username ?? '';
+    _isUsernameConfirmed = true;
+
+    if (user.profileImageKey != null) {
+      final presignedUrl = await _apiService.getPresignedImageUrl(
+        user.profileImageKey!,
+      );
+      if (presignedUrl != null) {
+        _profileImage = await _downloadImageFile(presignedUrl);
+      }
+    }
+
+    notifyListeners();
+  }
+
+  Future<File> _downloadImageFile(String url) async {
+    final response = await HttpClient()
+        .getUrl(Uri.parse(url))
+        .then((req) => req.close());
+    if (response.statusCode == 200) {
+      final bytes = await consolidateHttpClientResponseBytes(response);
+      final tempDir = Directory.systemTemp;
+      final file = File('${tempDir.path}/profile_image.jpg');
+      return await file.writeAsBytes(bytes);
+    } else {
+      throw Exception('이미지 다운로드 실패: ${response.statusCode}');
     }
   }
 

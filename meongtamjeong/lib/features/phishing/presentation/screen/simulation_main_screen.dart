@@ -1,39 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:meongtamjeong/core/services/phishing_simulation_service.dart';
-import 'package:meongtamjeong/features/phishing/logic/model/phishing_category_model.dart';
-import 'package:meongtamjeong/features/phishing/logic/model/simulation_session_model.dart';
-import 'package:meongtamjeong/features/phishing/presentation/widgets_simulation/simulation_category_selector.dart';
+import 'package:meongtamjeong/core/utils/phishing_label_loader.dart';
 import 'package:meongtamjeong/features/phishing/presentation/widgets_simulation/simulation_message_bubble.dart';
+import 'package:meongtamjeong/features/phishing/logic/model/simulation_session_model.dart';
 
 class SimulationMainScreen extends StatefulWidget {
   final VoidCallback onBack;
+  final int personaId; // ✅ 캐릭터 ID를 받는다
 
-  const SimulationMainScreen({super.key, required this.onBack});
+  const SimulationMainScreen({
+    super.key,
+    required this.onBack,
+    required this.personaId,
+  });
 
   @override
   State<SimulationMainScreen> createState() => _SimulationMainScreenState();
 }
 
 class _SimulationMainScreenState extends State<SimulationMainScreen> {
-  bool _hasCategorySelected = false;
+  final _messages = <_SimulationMessage>[];
+  final _phishingService = PhishingSimulationService();
+
   SimulationSession? _session;
-  PhishingCategory? _selectedCategory;
+  List<String> _categoryCodes = [];
+  bool _isLoading = true;
+  bool _isStarted = false;
 
-  final List<_SimulationMessage> _messages = [];
-  final TextEditingController _controller = TextEditingController();
-  bool _isSending = false;
+  @override
+  void initState() {
+    super.initState();
+    _fetchInitialCategoryCodes();
+  }
 
-  void _handleCategorySelected(PhishingCategory category) async {
-    setState(() {
-      _hasCategorySelected = true;
-      _selectedCategory = category;
-      _messages.clear();
-    });
-
+  Future<void> _fetchInitialCategoryCodes() async {
     try {
-      final session = await PhishingSimulationService()
-          .createConversationWithCategory(category.code.name);
+      final codes = await _phishingService.fetchPhishingCategoryCodes();
+      setState(() {
+        _categoryCodes = codes;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _categoryCodes = [];
+        _isLoading = false;
+      });
+      _messages.add(_SimulationMessage(text: '❌ 카테고리 로드 실패', isUser: false));
+    }
+  }
 
+  Future<void> _startSimulation(String code) async {
+    setState(() => _isStarted = true);
+    try {
+      final session = await _phishingService.startSimulationWithCategory(
+        categoryCode: code,
+        personaId: widget.personaId, // ✅ 선택한 캐릭터 ID 사용
+      );
       setState(() {
         _session = session;
         _messages.add(
@@ -45,47 +67,85 @@ class _SimulationMainScreenState extends State<SimulationMainScreen> {
       });
     } catch (e) {
       setState(() {
-        _messages.add(
-          _SimulationMessage(text: '❌ 시뮬레이션 시작에 실패했습니다.', isUser: false),
-        );
+        _messages.add(_SimulationMessage(text: '❌ 시뮬레이션 시작 실패', isUser: false));
       });
     }
   }
 
-  Future<void> _sendMessage() async {
-    if (_controller.text.trim().isEmpty || _isSending || _session == null)
-      return;
+  Widget _buildInitialPrompt() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        const Text(
+          '멍탐정이 시뮬레이션할래?',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => setState(() => _isStarted = true),
+              child: const Text('예'),
+            ),
+            const SizedBox(width: 16),
+            OutlinedButton(
+              onPressed: () => widget.onBack(),
+              child: const Text('아니오'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
-    final userMessage = _controller.text.trim();
-    setState(() {
-      _messages.add(_SimulationMessage(text: userMessage, isUser: true));
-      _controller.clear();
-      _isSending = true;
-    });
+  Widget _buildCategoryButtons() {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 12,
+      children:
+          _categoryCodes
+              .map(
+                (code) => ElevatedButton(
+                  onPressed: () => _startSimulation(code),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      side: const BorderSide(color: Colors.black26),
+                    ),
+                  ),
+                  child: Text(PhishingLabelLoader.getLabel(code)),
+                ),
+              )
+              .toList(),
+    );
+  }
 
-    try {
-      final aiMessage = await PhishingSimulationService()
-          .sendMessageToSimulation(
-            conversationId: _session!.id,
-            message: userMessage,
-          );
-
-      setState(() {
-        _messages.add(_SimulationMessage(text: aiMessage, isUser: false));
-        _isSending = false;
-      });
-    } catch (e) {
-      setState(() {
-        _messages.add(_SimulationMessage(text: '❌ 메시지 전송 실패', isUser: false));
-        _isSending = false;
-      });
-    }
+  Widget _buildMessageList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _messages.length,
+      itemBuilder: (context, index) {
+        final msg = _messages[index];
+        return SimulationMessageBubble(
+          text: msg.text,
+          isUser: msg.isUser,
+          botName: _session?.persona.name ?? '시뮬봇',
+          botImagePath: 'assets/images/characters/example_meong.png',
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('피싱 시뮬레이션'),
         backgroundColor: Colors.white,
@@ -97,60 +157,20 @@ class _SimulationMainScreenState extends State<SimulationMainScreen> {
         ),
       ),
       body:
-          _hasCategorySelected ? _buildChatScreen() : _buildCategorySelector(),
-    );
-  }
-
-  Widget _buildCategorySelector() {
-    return SimulationCategorySelector(
-      onCategorySelected: _handleCategorySelected,
-    );
-  }
-
-  Widget _buildChatScreen() {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            itemCount: _messages.length,
-            itemBuilder: (context, index) {
-              final msg = _messages[index];
-              return SimulationMessageBubble(
-                text: msg.text,
-                isUser: msg.isUser,
-                botName: _session?.persona.name ?? '시뮬봇',
-                botImagePath: 'assets/images/characters/example_meong.png',
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  onSubmitted: (_) => _sendMessage(),
-                  decoration: InputDecoration(
-                    hintText: '메시지를 입력하세요',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : !_isStarted
+              ? _buildInitialPrompt()
+              : Column(
+                children: [
+                  Expanded(child: _buildMessageList()),
+                  if (_session == null)
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: _buildCategoryButtons(),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(width: 8),
-              IconButton(icon: const Icon(Icons.send), onPressed: _sendMessage),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

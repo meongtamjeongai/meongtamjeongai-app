@@ -53,6 +53,7 @@ class _ChatHistoryScreenContentState extends State<_ChatHistoryScreenContent> {
           '지난 대화 보기',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         actions: [
           PopupMenuButton<bool>(
             onSelected: (value) => setState(() => sortByLatest = value),

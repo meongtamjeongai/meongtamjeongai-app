@@ -25,6 +25,7 @@ class MyPageScreen extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
+        centerTitle: true,
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 16),

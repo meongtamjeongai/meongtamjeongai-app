@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -82,27 +83,32 @@ class _CharacterSelectionScrollState extends State<CharacterSelectionScroll> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage:
-                            character.profileImageUrl != null
-                                ? NetworkImage(character.profileImageUrl!)
-                                : null,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
                         child:
-                            character.profileImageUrl == null
-                                ? const Icon(
-                                  Icons.pets,
-                                  size: 32,
-                                  color: Colors.grey,
+                            character.profileImageUrl != null
+                                ? Image.network(
+                                  character.profileImageUrl!,
+                                  height: 140,
+                                  width: 140,
+                                  fit: BoxFit.contain,
                                 )
-                                : null,
+                                : Container(
+                                  height: 140,
+                                  width: 140,
+                                  color: Colors.grey[200],
+                                  child: const Icon(
+                                    Icons.pets,
+                                    size: 32,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 6),
                       Text(
                         character.name,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -110,7 +116,7 @@ class _CharacterSelectionScrollState extends State<CharacterSelectionScroll> {
                       Text(
                         specialty,
                         style: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: Colors.black54,
                         ),
                         textAlign: TextAlign.center,

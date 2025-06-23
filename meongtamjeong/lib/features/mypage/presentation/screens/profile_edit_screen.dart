@@ -27,7 +27,16 @@ class _ProfileEditScreenContent extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('프로필 관리'),
+        title: const Text(
+          '프로필 관리',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        centerTitle: true,
+
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),

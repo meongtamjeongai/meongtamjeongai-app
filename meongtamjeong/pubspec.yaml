@@ -122,9 +122,7 @@ flutter:
     - assets/images/icons/
     - assets/images/characters/
     - assets/images/backgrounds/
-    - assets/animations/
     - assets/fonts/
-    - assets/audio/
 
   fonts:
     - family: NotoSansKR

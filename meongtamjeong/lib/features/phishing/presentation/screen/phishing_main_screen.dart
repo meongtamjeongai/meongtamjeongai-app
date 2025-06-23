@@ -60,9 +60,9 @@ class _PhishingMainScreenState extends State<PhishingMainScreen> {
           children: [
             Image.asset(
               'assets/images/characters/example_meong.png',
-              height: 230,
+              height: 320,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
             ...menuItems.map(_buildMenuCard),
           ],
         ),

@@ -12,7 +12,10 @@ class PhishingHandlingGuideScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('피해 대처 가이드'),
+        title: const Text(
+          '피해대처 안내',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,

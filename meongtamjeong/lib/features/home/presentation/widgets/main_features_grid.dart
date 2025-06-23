@@ -59,8 +59,9 @@ class MainFeaturesGrid extends StatelessWidget {
               children: [
                 Icon(
                   feature['icon'] as IconData,
-                  size: 35,
-                  color: Colors.grey[800],
+                  size: 40,
+                  // color: Colors.grey[800],
+                  color: const Color.fromARGB(255, 4, 104, 185),
                 ),
                 const SizedBox(height: 6),
                 Text(

@@ -49,7 +49,7 @@ class MainHomeScreen extends StatelessWidget {
 
               CharacterSelectionScroll(),
 
-              SizedBox(height: 32),
+              // SizedBox(height: 32),
             ],
           ),
         ),

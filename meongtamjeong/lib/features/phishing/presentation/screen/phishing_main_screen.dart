@@ -43,28 +43,32 @@ class _PhishingMainScreenState extends State<PhishingMainScreen> {
     }
 
     // ✅ 초기 메뉴 선택 화면
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          '피싱방지 기능을 선택해주세요',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+    return WillPopScope(
+      // ✅ 뒤로가기 비활성화
+      onWillPop: () async => false,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 1,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          children: [
-            Image.asset(
-              'assets/images/characters/example_meong.png',
-              height: 320,
-            ),
-            const SizedBox(height: 10),
-            ...menuItems.map(_buildMenuCard),
-          ],
+        appBar: AppBar(
+          title: const Text(
+            '피싱방지 기능을 선택해주세요',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 1,
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            children: [
+              Image.asset(
+                'assets/images/characters/example_meong.png',
+                height: 320,
+              ),
+              const SizedBox(height: 10),
+              ...menuItems.map(_buildMenuCard),
+            ],
+          ),
         ),
       ),
     );

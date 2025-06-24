@@ -31,14 +31,14 @@ class ProfileHeader extends StatelessWidget {
                 Text(
                   userProfile.username,
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   userProfile.userId,
-                  style: const TextStyle(fontSize: 18, color: Colors.black54),
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
                 ),
               ],
             ),

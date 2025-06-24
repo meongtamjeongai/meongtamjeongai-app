@@ -19,13 +19,17 @@ class MyPageScreen extends StatelessWidget {
         shadowColor: Colors.black.withOpacity(0.1),
         title: const Text(
           '내 정보',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        // title: const Text(
+        //   '내 정보',
+        //   style: TextStyle(
+        //     fontSize: 20,
+        //     fontWeight: FontWeight.bold,
+        //     color: Colors.black87,
+        //   ),
+        // ),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 16),

@@ -27,7 +27,13 @@ class _AppInfoWebViewScreenState extends State<AppInfoWebViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('앱 정보')),
+      appBar: AppBar(
+        title: const Text(
+          '앱 정보',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: WebViewWidget(controller: _controller),
     );
   }

@@ -28,7 +28,11 @@ class _FAQWebViewScreenState extends State<FAQWebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('자주 묻는 질문'),
+        title: const Text(
+          '자주 묻는 질문',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),

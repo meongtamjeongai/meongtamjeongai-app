@@ -179,12 +179,19 @@ class _ChatScreenContentState extends State<_ChatScreenContent> {
             CircleAvatar(
               radius: 50,
               backgroundColor: Colors.white,
-              backgroundImage: hasValidImage ? NetworkImage(imageUrl) : null,
               child:
-                  !hasValidImage
-                      ? const Icon(Icons.pets, size: 40, color: Colors.grey)
-                      : null,
+                  hasValidImage
+                      ? ClipOval(
+                        child: Image.network(
+                          imageUrl,
+                          width: 90, // 원하는 크기로 조절
+                          height: 90,
+                          fit: BoxFit.contain,
+                        ),
+                      )
+                      : const Icon(Icons.pets, size: 40, color: Colors.grey),
             ),
+
             const SizedBox(height: 8),
             Text(
               character.name,

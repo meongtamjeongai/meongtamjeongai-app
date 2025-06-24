@@ -30,7 +30,13 @@ class _TermsWebViewScreenState extends State<TermsWebViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('앱 이용약관')),
+      appBar: AppBar(
+        title: const Text(
+          '앱 이용 약관',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: WebViewWidget(controller: _controller),
     );
   }

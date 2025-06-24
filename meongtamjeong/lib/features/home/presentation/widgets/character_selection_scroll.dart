@@ -73,8 +73,8 @@ class _CharacterSelectionScrollState extends State<CharacterSelectionScroll> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -116,7 +116,7 @@ class _CharacterSelectionScrollState extends State<CharacterSelectionScroll> {
                       Text(
                         specialty,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           color: Colors.black54,
                         ),
                         textAlign: TextAlign.center,

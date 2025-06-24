@@ -47,15 +47,15 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Image.asset(
                 'assets/images/characters/poppy_guard.png',
-                height: 300,
+                height: 350,
               ),
-              const SizedBox(height: 25),
+              // const SizedBox(height: 10),
               const Text(
                 '멍탐정과 함께\n피싱을 예방하세요!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 55),
+              const SizedBox(height: 45),
 
               KakaoLoginButton(
                 isEnabled: !isLoading,

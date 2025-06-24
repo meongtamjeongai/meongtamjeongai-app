@@ -19,7 +19,7 @@ import 'package:meongtamjeong/features/phishing/presentation/screen/detection_re
 import 'package:meongtamjeong/features/phishing/presentation/screen/phishing_handling_guide_main_screen.dart';
 import 'package:meongtamjeong/features/phishing/presentation/screen/phishing_main_screen.dart';
 import 'package:meongtamjeong/navigation/screen/main_navigation_screen.dart';
-import 'package:meongtamjeong/features/onboarding/presentation/screens/splash_screen.dart';
+import 'package:meongtamjeong/features/onboarding/presentation/splash_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meongtamjeong/features/mypage/data/repositories/sample_notice_data.dart';
+import 'package:meongtamjeong/features/mypage/repositories/sample_notice_data.dart';
 
 class NoticesScreen extends StatelessWidget {
   const NoticesScreen({super.key});
@@ -9,7 +9,11 @@ class NoticesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('공지사항'),
+        title: const Text(
+          '공지사항',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,

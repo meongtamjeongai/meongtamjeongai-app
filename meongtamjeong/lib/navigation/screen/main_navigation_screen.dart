@@ -77,15 +77,27 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         return SimulationMainScreen(
           onBack: () {
             setState(() {
-              _sub = null; // 뒤로가면 기능 선택 화면으로 돌아가기
+              _sub = null;
             });
           },
         );
       case 'guide':
-        return const PhishingHandlingGuideScreen();
+        return PhishingHandlingGuideScreen(
+          onBack: () {
+            setState(() {
+              _sub = null;
+            });
+          },
+        );
       case 'investigation':
       default:
-        return const DetectionMainScreen();
+        return DetectionMainScreen(
+          onBack: () {
+            setState(() {
+              _sub = null;
+            });
+          },
+        );
     }
   }
 }

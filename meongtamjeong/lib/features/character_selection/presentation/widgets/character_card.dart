@@ -73,19 +73,20 @@ class _CharacterCardState extends State<CharacterCard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipOval(
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16), // 모서리 둥글게
               child:
                   hasNetworkImage
                       ? Image.network(
                         character.profileImageUrl!,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.contain, // ✅ 이미지 전체 보이게
                         errorBuilder: (context, error, stackTrace) {
                           print('🔴 이미지 로딩 에러: $error');
                           return Container(
-                            width: 60,
-                            height: 60,
+                            width: 100,
+                            height: 100,
                             color: Colors.grey[200],
                             child: const Icon(
                               Icons.pets,
@@ -96,8 +97,8 @@ class _CharacterCardState extends State<CharacterCard> {
                         },
                       )
                       : Container(
-                        width: 60,
-                        height: 60,
+                        width: 100,
+                        height: 100,
                         color: Colors.grey[200],
                         child: const Icon(
                           Icons.pets,
@@ -106,8 +107,8 @@ class _CharacterCardState extends State<CharacterCard> {
                         ),
                       ),
             ),
-            const SizedBox(height: 12),
 
+            // const SizedBox(height: 12),
             Text(
               character.name,
               style: const TextStyle(

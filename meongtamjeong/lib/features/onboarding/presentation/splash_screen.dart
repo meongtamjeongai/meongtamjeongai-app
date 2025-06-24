@@ -22,14 +22,14 @@ class SplashScreen extends StatelessWidget {
               // const SizedBox(height: 40),
               const Image(
                 image: AssetImage('assets/images/characters/poppy_guard.png'),
-                width: 300,
-                height: 300,
+                width: 410,
+                height: 410,
               ),
-              const SizedBox(height: 40),
+              // const SizedBox(height: 20),
               const Text(
                 '멍탐정',
                 style: TextStyle(
-                  fontSize: 33,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                   letterSpacing: 1.2,
@@ -39,7 +39,7 @@ class SplashScreen extends StatelessWidget {
               Text(
                 '당신을 지키는 반려 챗봇',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[700],
                 ),

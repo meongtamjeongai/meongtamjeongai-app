@@ -131,16 +131,21 @@ class _ChatHistoryScreenContentState extends State<_ChatHistoryScreenContent> {
                       final success = await provider.deleteConversation(
                         history.id,
                       );
-                      if (success && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('대화가 삭제되었습니다.')),
+
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        final messenger = ScaffoldMessenger.of(context);
+
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              success ? '대화가 삭제되었습니다.' : '삭제에 실패했습니다.',
+                            ),
+                          ),
                         );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('삭제에 실패했습니다.')),
-                        );
-                      }
+                      });
                     },
+
                     child: Material(
                       color: const Color(0xFFF7F9FB),
                       borderRadius: BorderRadius.circular(16),
@@ -183,13 +188,13 @@ class _ChatHistoryScreenContentState extends State<_ChatHistoryScreenContent> {
                             ),
                           ),
                         ),
-                        trailing: Text(
-                          _formatTime(time),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                          ),
-                        ),
+                        // trailing: Text(
+                        //   _formatTime(time),
+                        //   style: const TextStyle(
+                        //     fontSize: 13,
+                        //     color: Colors.grey,
+                        //   ),
+                        // ),
                         onTap: () {
                           context.pushReplacement(
                             '/main',
@@ -208,16 +213,16 @@ class _ChatHistoryScreenContentState extends State<_ChatHistoryScreenContent> {
     );
   }
 
-  String _formatTime(DateTime time) {
-    final localTime = time.toLocal(); // ✅ UTC → Local 변환
-    final now = DateTime.now();
+  // String _formatTime(DateTime time) {
+  //   final localTime = time.toLocal(); // ✅ UTC → Local 변환
+  //   final now = DateTime.now();
 
-    if (DateUtils.isSameDay(localTime, now)) {
-      return DateFormat.Hm().format(localTime);
-    } else if (now.difference(localTime).inDays == 1) {
-      return '어제';
-    } else {
-      return DateFormat.MMMd('ko_KR').format(localTime);
-    }
-  }
+  //   if (DateUtils.isSameDay(localTime, now)) {
+  //     return DateFormat.Hm().format(localTime);
+  //   } else if (now.difference(localTime).inDays == 1) {
+  //     return '어제';
+  //   } else {
+  //     return DateFormat.MMMd('ko_KR').format(localTime);
+  //   }
+  // }
 }

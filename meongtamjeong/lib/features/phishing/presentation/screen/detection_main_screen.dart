@@ -96,9 +96,7 @@ class _DetectionMainScreenState extends State<DetectionMainScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go('/main', extra: {'index': 1});
-          }, // ✅ 전달된 뒤로가기 콜백
+          onPressed: widget.onBack, // ✅ 상위에서 전달받은 콜백 실행
         ),
       ),
       body: Stack(

@@ -20,8 +20,8 @@ class ProfileHeader extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 50,
-            backgroundColor: Colors.grey,
-            child: Icon(Icons.person, color: Colors.white, size: 32),
+            backgroundImage: AssetImage('assets/images/characters/poppy_n.png'),
+            backgroundColor: Colors.white,
           ),
           const SizedBox(width: 16),
           Expanded(

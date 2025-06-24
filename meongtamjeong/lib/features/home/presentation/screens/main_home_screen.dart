@@ -17,7 +17,7 @@ class MainHomeScreen extends StatelessWidget {
             children: const [
               SizedBox(height: 10),
               HeartRechargeAd(),
-              SizedBox(height: 20),
+              SizedBox(height: 40),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
@@ -33,8 +33,6 @@ class MainHomeScreen extends StatelessWidget {
               SizedBox(height: 10),
 
               MainFeaturesGrid(),
-
-              SizedBox(height: 5),
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
